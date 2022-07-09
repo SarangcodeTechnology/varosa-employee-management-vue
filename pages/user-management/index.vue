@@ -16,7 +16,7 @@
               {{ activeStatus ? 'View Inactive Users' : 'View Active Users' }}
             </v-btn>
           </v-col>
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <v-col cols="auto">
             <v-btn color="green" dark>
               <v-icon left>fas fa-file-excel</v-icon>
@@ -41,7 +41,6 @@
           :search="search"
           :items-per-page="25"
           :loading="isLoading"
-          :options.sync="options"
           fixed-header
           loading-text="Fetching data. Please wait..."
           :footer-props="{
@@ -55,8 +54,8 @@
         >
           <template v-slot:item.actions="{ item }">
             <div class="d-flex justify-content-center align-items-center">
-              <v-tooltip bottom>
-                <template v-slot:activator="{attrs,on}">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{attrs,on}">
                   <v-btn @click="viewUser(item)" v-bind="attrs" v-on="on" fab icon x-small>
                     <v-icon>fas fa-eye</v-icon>
                   </v-btn>
@@ -211,7 +210,6 @@ export default {
   },
   data() {
     return {
-      options: {},
       activeStatus: true,
       activeData: [],
       inactiveData: [],
@@ -290,7 +288,6 @@ export default {
       const temp = this;
       this.$root.confirm('Confirm Delete', 'Are you sure you want to delete ' + item.name + '?', {color: 'red'})
         .then((confirm) => {
-
         }).catch((error) => {
         console.log(error);
       });

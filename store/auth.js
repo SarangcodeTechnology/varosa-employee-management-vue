@@ -60,7 +60,6 @@ const actions = {
     state.commit("UNSET_USER");
     this.$cookiz.remove('accessToken');
     this.app.router.push("/login");
-
   },
 };
 
