@@ -42,7 +42,6 @@ export default {
     ['cookie-universal-nuxt', {alias: 'cookiz'}],
     '@nuxtjs/axios',
     'nuxt-route-meta',
-    'v-snackbars',
   ],
   axios: {},
 

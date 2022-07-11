@@ -135,7 +135,7 @@
         </v-data-table>
       </v-container>
     </v-card>
-    <v-dialog max-width="50%" persistent v-model="userDialog">
+    <v-dialog max-width="50%" :persistent="editingUser" v-model="userDialog">
       <v-card>
         <v-toolbar
           dark
