@@ -10,9 +10,9 @@
     >
       <template v-for="item in items">
         <v-divider v-if="miniVariant"></v-divider>
-        <v-subheader v-else-if="item.subheading" >{{ item.subheading }}</v-subheader>
+        <v-subheader v-else-if="item.subheading">{{ item.subheading }}</v-subheader>
         <v-list nav>
-          <template  v-for="listItem in item.listItems">
+          <template v-for="listItem in item.listItems">
             <v-tooltip v-if="miniVariant" right>
               <template v-slot:activator="{ on, attrs }">
                 <v-list-item
@@ -256,18 +256,19 @@
 
     <!-- Confirm Dialog-->
     <confirmDialog ref="confirm"></confirmDialog>
-    <vtoast ref="toast"/>
+    <toast/>
   </v-app>
 </template>
 
 <script>
 import confirmDialog from '/components/confirmDialog.vue'
-import vtoast from '/components/vtoast.vue'
+import toast from '/components/toast.vue'
+
 export default {
   name: 'DefaultLayout',
   components: {
     confirmDialog,
-    vtoast
+    toast,
   },
   data() {
     return {
@@ -395,17 +396,17 @@ export default {
   },
   mounted() {
     this.$root.confirm = this.$refs.confirm.open;
-    this.$root.toast = this.$refs.toast;
   },
 }
 </script>
 
 <style lang="scss">
-.v-app-bar{
+.v-app-bar {
   i.v-icon.v-icon {
     color: #212121;
   }
 }
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

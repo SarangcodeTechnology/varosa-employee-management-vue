@@ -42,6 +42,7 @@ export default {
     ['cookie-universal-nuxt', {alias: 'cookiz'}],
     '@nuxtjs/axios',
     'nuxt-route-meta',
+    'v-snackbars',
   ],
   axios: {},
 
@@ -54,6 +55,15 @@ export default {
       dark: false,
       themes: {
         dark: {
+          primary: "#0F436E",
+          accent: "#F15A22",
+          secondary: "#F2F4F7",
+          info: colors.teal.lighten1,
+          warning: colors.amber.base,
+          error: colors.deepOrange.accent4,
+          success: colors.green.accent3
+        },
+        light: {
           primary: "#0F436E",
           accent: "#F15A22",
           secondary: "#F2F4F7",

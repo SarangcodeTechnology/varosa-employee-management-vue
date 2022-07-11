@@ -2,6 +2,7 @@ import createPersistedState from 'vuex-persistedstate'
 
 export default ({store}) => {
   createPersistedState({
-    key: 'varosaHRMVuex'
+    key: 'varosaHRMVuex',
+    paths:["auth"]
   })(store)
 }

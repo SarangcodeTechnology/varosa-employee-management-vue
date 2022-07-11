@@ -54,9 +54,9 @@
         >
           <template v-slot:item.actions="{ item }">
             <div class="d-flex justify-content-center align-items-center">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{attrs,on}">
-                  <v-btn @click="viewUser(item)" v-bind="attrs" v-on="on" fab icon x-small>
+              <v-tooltip bottom>
+                <template v-slot:activator="{attrs,on}">
+                  <v-btn @click="editUser(item,false)" v-bind="attrs" v-on="on" fab icon x-small>
                     <v-icon>fas fa-eye</v-icon>
                   </v-btn>
                 </template>
@@ -64,7 +64,7 @@
               </v-tooltip>
               <v-tooltip v-if="activeStatus" bottom>
                 <template v-slot:activator="{attrs,on}">
-                  <v-btn @click="editUser(item)" v-bind="attrs" v-on="on" fab icon x-small>
+                  <v-btn @click="editUser(item,true)" v-bind="attrs" v-on="on" fab icon x-small>
                     <v-icon>fas fa-pencil</v-icon>
                   </v-btn>
                 </template>
@@ -139,8 +139,9 @@
       <v-card>
         <v-toolbar
           dark
+          flat
+          class="mb-6"
           color="primary"
-          dense
         >
 
           <v-toolbar-title>User Details</v-toolbar-title>
@@ -148,8 +149,7 @@
           <v-toolbar-items>
             <v-btn
               icon
-              dark
-              @click="userDialog = false"
+              @click="userDialog = false,editingUser=false"
             >
               <v-icon>fa-solid fa-xmark</v-icon>
             </v-btn>
@@ -157,9 +157,10 @@
         </v-toolbar>
         <v-card-text>
           <v-container>
-            <v-row>
+            <v-row dense>
               <v-col cols=6>
                 <v-text-field
+                  :readonly="!editingUser"
                   dense
                   filled
                   label="Name*"
@@ -168,6 +169,7 @@
               </v-col>
               <v-col cols=6>
                 <v-text-field
+                  :readonly="!editingUser"
                   dense
                   filled
                   label="Email*"
@@ -176,20 +178,34 @@
               </v-col>
               <v-col cols=6>
                 <v-text-field
+                  :readonly="!editingUser"
                   dense
                   filled
                   label="Phone"
                   v-model="editedItem.phone"
                 ></v-text-field>
               </v-col>
+              <v-col cols="12">
+                <v-checkbox
+                  :readonly="!editingUser"
+                  v-model="editedItem.restrictAccessToClients"
+                  label="Restrict access to clients"
+                ></v-checkbox>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
-        <v-card-actions >
+        <v-card-actions v-if="editingUser">
           <v-spacer/>
           <v-btn
+            color="error"
+            @click="userDialog = false,editingUser=false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
             color="primary"
-            @click="userDialog = false"
+            @click="userDialog = false,editingUser=false"
           >
             Save
           </v-btn>
@@ -215,12 +231,12 @@ export default {
       inactiveData: [],
       search: "",
       isLoading: false,
-      editedItem:{
+      editedItem: {
         name: "",
         email: "",
         phone: ""
       },
-      defaultItem:{
+      defaultItem: {
         name: "",
         email: "",
         phone: "",
@@ -235,6 +251,7 @@ export default {
         {text: "Actions", value: "actions", width: "15%"},
       ],
       userDialog: false,
+      editingUser: false,
     }
   },
   computed: {
@@ -248,41 +265,53 @@ export default {
     }
   },
   methods: {
-    async getActiveData() {
+    getActiveData() {
       let temp = this;
       this.isLoading = true;
 
-      await this.$axios.get(process.env.BACKEND_API_URL + "user/getAll/active", {
-        headers: {
-          Accept: "application/json",
-          Authorization: temp.accessToken
+      this.$store.dispatch("api/makeGetRequest",
+        {
+          route: "user/getAll/active"
         }
-      })
-        .then(res => {
-          this.activeData = res.data.data;
-          this.isLoading = false;
-        }).catch(err => {
-          console.log('error', err);
-          this.isLoading = false;
+      ).then(response => {
+        if (response.data.status === "OK") {
+          this.$store.dispatch('toast/setSnackbar', {
+            text: "Active users fetched successfully.",
+          });
+          this.activeData = response.data.data;
+        }
+        this.isLoading = false;
+      }).catch(error => {
+        this.$store.dispatch('toast/setSnackbar', {
+          color: "error",
+          icon: "fa-solid fa-circle-xmark",
+          text: "Problem while fetching active users.",
         });
+        this.isLoading = false;
+      });
     },
-    async getInactiveData() {
-      let temp = this;
+    getInactiveData() {
       this.isLoading = true;
-
-      await this.$axios.get(process.env.BACKEND_API_URL + "user/getAll/inactive", {
-        headers: {
-          Accept: "application/json",
-          Authorization: temp.accessToken
+      this.$store.dispatch('api/makeGetRequest',
+        {
+          route: "user/getAll/inactive"
         }
-      })
-        .then(res => {
-          this.inactiveData = res.data.data;
-          this.isLoading = false;
-        }).catch(err => {
-          console.log('error', err);
-          this.isLoading = false;
+      ).then(response => {
+        if (response.data.status === "OK") {
+          this.$store.dispatch('toast/setSnackbar', {
+            text: "Inactive users fetched successfully.",
+          });
+          this.inactiveData = response.data.data;
+        }
+        this.isLoading = false;
+      }).catch(error => {
+        this.$store.dispatch('toast/setSnackbar', {
+          color: "error",
+          icon: "fa-solid fa-circle-xmark",
+          text: "Problem while fetching inactive users.",
         });
+        this.isLoading = false;
+      });
     },
     confirm(item) {
       const temp = this;
@@ -292,9 +321,12 @@ export default {
         console.log(error);
       });
     },
-    viewUser(item) {
+    editUser(item, editingUser) {
       this.editedItem = Object.assign({}, item)
       this.userDialog = true
+      if (editingUser) {
+        this.editingUser = editingUser
+      }
     }
   },
   mounted() {
