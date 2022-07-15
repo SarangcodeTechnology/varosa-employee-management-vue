@@ -1,56 +1,60 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      color="#0F436E"
-      dark
-      app
-    >
-      <template v-for="item in items">
-        <v-divider v-if="miniVariant"></v-divider>
-        <v-subheader v-else-if="item.subheading">{{ item.subheading }}</v-subheader>
-        <v-list nav>
-          <template v-for="listItem in item.listItems">
-            <v-tooltip v-if="miniVariant" right>
-              <template v-slot:activator="{ on, attrs }">
-                <v-list-item
-                  v-bind="attrs"
-                  v-on="on"
-                  :to="listItem.to"
-                  router
-                  exact
-                >
-                  <v-list-item-action class="mr-4">
-                    <v-icon>{{ listItem.icon }}</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-content>
-                    <v-list-item-title v-text="listItem.title"/>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-              <span>{{ listItem.title }}</span>
-            </v-tooltip>
-            <v-list-item
-              v-else
-              :to="listItem.to"
-              router
-              exact
-            >
-              <v-list-item-action class="mr-4">
-                <v-icon>{{ listItem.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="listItem.title"/>
-              </v-list-item-content>
-            </v-list-item>
+    <client-only>
+      <v-navigation-drawer
+        v-model="drawer"
+        :mini-variant="miniVariant"
+        :clipped="clipped"
+        color="#0F436E"
+        dark
+        app
+      >
+        <template v-for="item in tableItems">
+          <template v-if="item.listItems.length>0">
+            <v-divider v-if="miniVariant"></v-divider>
+            <v-subheader v-else-if="item.subheading">{{ item.subheading }}</v-subheader>
           </template>
+          <v-list nav>
+            <template v-for="listItem in item.listItems">
+              <v-tooltip v-if="miniVariant" right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-list-item
+                    v-bind="attrs"
+                    v-on="on"
+                    :to="listItem.to"
+                    router
+                    exact
+                  >
+                    <v-list-item-action class="mr-4">
+                      <v-icon>{{ listItem.icon }}</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="listItem.title"/>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+                <span>{{ listItem.title }}</span>
+              </v-tooltip>
+              <v-list-item
+                v-else
+                :to="listItem.to"
+                router
+                exact
+              >
+                <v-list-item-action class="mr-4">
+                  <v-icon>{{ listItem.icon }}</v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title v-text="listItem.title"/>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
 
 
-        </v-list>
-      </template>
-    </v-navigation-drawer>
+          </v-list>
+        </template>
+      </v-navigation-drawer>
+    </client-only>
     <v-app-bar
       flat
       :class="!clipped?'mt-2 mx-2':''"
@@ -263,6 +267,7 @@
 <script>
 import confirmDialog from '/components/confirmDialog.vue'
 import toast from '/components/toast.vue'
+import {mapGetters} from "vuex";
 
 export default {
   name: 'DefaultLayout',
@@ -293,32 +298,32 @@ export default {
             {
               icon: 'fa-solid fa-users',
               title: 'User Management',
-              to: '/user-management'
+              to: 'user'
             },
             {
               icon: 'fa-solid fa-user-tie',
               title: 'Client Management',
-              to: '/client-management'
+              to: 'clients'
             },
             {
               icon: 'fa-solid fa-clipboard-user',
               title: 'Employee Management',
-              to: '/employee-management'
+              to: 'employees'
             },
             {
               icon: 'fa-solid fa-calendar',
               title: 'Holiday Management',
-              to: '/holiday-management'
+              to: 'holiday'
             },
             {
               icon: 'fa-solid fa-building-columns',
               title: 'Bank Management',
-              to: '/bank-management'
+              to: 'bank'
             },
             {
               icon: 'fa-solid fa-grip',
               title: 'Category Management',
-              to: '/category-management'
+              to: 'category'
             }
           ]
         },
@@ -328,12 +333,12 @@ export default {
             {
               icon: 'fa-solid fa-id-card',
               title: 'Client Roster',
-              to: '/client-roster'
+              to: 'client-roster'
             },
             {
               icon: 'fa-solid fa-id-card-clip',
               title: 'Employee Roster',
-              to: '/employee-roster'
+              to: 'employee-roster'
             },
           ]
         },
@@ -343,12 +348,12 @@ export default {
             {
               icon: 'fa-solid fa-money-bill-transfer',
               title: 'Salary Details',
-              to: '/salary-details'
+              to: 'salary'
             },
             {
               icon: 'fa-solid fa-file-invoice',
               title: 'Monthly Salary Sheet',
-              to: '/monthly-salary-sheet'
+              to: 'sheet'
             },
           ]
         },
@@ -358,12 +363,12 @@ export default {
             {
               icon: 'fa-solid fa-user-clock',
               title: 'Leave History',
-              to: '/leave-history'
+              to: 'leave'
             },
             {
               icon: 'fa-solid fa-chalkboard-teacher',
               title: 'Leave Payout Sheet',
-              to: '/leave-payout-sheet'
+              to: 'leave-payout'
             },
           ]
         }
@@ -392,7 +397,20 @@ export default {
     themeSwitch: function (old, newVal) {
       this.$vuetify.theme.dark = old;
     },
-
+  },
+  computed: {
+    ...mapGetters("auth", ["userFunctionalities"]),
+    tableItems() {
+      const temp = this;
+      return this.items.filter(item => {
+        return item.listItems= item.listItems.filter(listItem => {
+          if (listItem.to === "/") {
+            return true;
+          }
+          return !!temp.userFunctionalities.includes(listItem.to)
+        })
+      })
+    }
   },
   mounted() {
     this.$root.confirm = this.$refs.confirm.open;

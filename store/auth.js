@@ -1,8 +1,9 @@
 const state = () => ({
-  userFunctionalities: undefined,
-  userId: undefined,
-  restrictAccessToClients: undefined,
-  accessToken: undefined,
+  userFunctionalities: [],
+  allUserFunctionalities: [],
+  userId: null,
+  restrictAccessToClients: false,
+  accessToken: null,
 });
 
 const mutations = {
@@ -11,6 +12,10 @@ const mutations = {
       state.userFunctionalities = payload.functionalities;
       state.userId = payload.userId;
       state.restrictAccessToClients = payload.restrictAccessToClients;
+    }
+  }, SET_ALL_USER_FUNCTIONALITIES(state, payload) {
+    if (payload) {
+      state.allUserFunctionalities = payload;
     }
   },
   SET_ACCESS_TOKEN(state, payload) {
@@ -22,9 +27,10 @@ const mutations = {
     })
   },
   UNSET_USER(state) {
-    state.userFunctionalities = undefined;
+    state.userFunctionalities = [];
+    state.allUserFunctionalities = [];
     state.userId = undefined;
-    state.restrictAccessToClients = undefined;
+    state.restrictAccessToClients = false;
     state.accessToken = undefined;
   }
 };
@@ -39,34 +45,60 @@ const actions = {
         }
       }).then(function (response) {
         state.commit('SET_ACCESS_TOKEN', response.headers.authorization);
-        temp.$axios.get(process.env.BACKEND_API_URL + 'functionality/mappings/currentUser', {
-          headers: {
-            Accept: "application/json",
-            Authorization: temp.$cookiz.get('accessToken')
-          }
-        }).then(function (response) {
-          state.commit('SET_USER_FUNCTIONALITIES', response.data.data);
-          temp.app.router.push("/");
-          resolve(response);
-        }).catch(function (error) {
-          reject(error);
-        });
+        state.dispatch("getAllActiveFunctionalitiesMappings");
+        state.dispatch("getCurrentUserFunctionalitiesMappings");
+        temp.app.router.push("/");
         resolve(response);
       }).catch(function (error) {
         reject(error);
       });
+    });
+  },
+  async getAllActiveFunctionalitiesMappings(state) {
+    const temp = this;
+    await this.$axios.get(process.env.BACKEND_API_URL + 'functionality/getAll/active', {
+      headers: {
+        Accept: "application/json",
+        Authorization: temp.$cookiz.get('accessToken')
+      }
+    }).then(function (response) {
+      state.commit('SET_ALL_USER_FUNCTIONALITIES', response.data.data);
+      return response;
+    }).catch(function (error) {
+      return error;
+    });
+  },
+  async getCurrentUserFunctionalitiesMappings(state) {
+    const temp = this;
+    temp.$axios.get(process.env.BACKEND_API_URL + 'functionality/mappings/currentUser', {
+      headers: {
+        Accept: "application/json",
+        Authorization: temp.$cookiz.get('accessToken')
+      }
+    }).then(function (response) {
+      state.commit('SET_USER_FUNCTIONALITIES', response.data.data);
+      return(response);
+    }).catch(function(error){
+      return (error);
     });
   }, logout(state) {
     state.commit("UNSET_USER");
     this.$cookiz.remove('accessToken');
     this.app.router.push("/login");
   },
+
 };
 
 const getters = {
   accessToken(state) {
     return state.accessToken;
   },
+  allUserFunctionalities(state) {
+    return state.allUserFunctionalities;
+  },
+  userFunctionalities(state) {
+    return state.userFunctionalities;
+  }
 };
 
 export default {
