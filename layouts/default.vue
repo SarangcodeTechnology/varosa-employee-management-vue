@@ -419,6 +419,9 @@ export default {
 </script>
 
 <style lang="scss">
+.v-select__selections input {
+  display: none !important;
+}
 .v-app-bar {
   i.v-icon.v-icon {
     color: #212121;

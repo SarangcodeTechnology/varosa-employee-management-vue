@@ -9,11 +9,15 @@
                           label="Search..."></v-text-field>
           </v-col>
           <v-col cols="auto">
-            <v-btn @click="activeStatus = !activeStatus;activeStatus===true?getActiveData():getInactiveData()"
-                   :color="activeStatus?'deep-orange':'green'" dark>
-              <v-icon left>{{ activeStatus ? 'fas fa-user-alt-slash' : 'fas fa-user' }}</v-icon>
-              {{ activeStatus ? 'View Inactive Users' : 'View Active Users' }}
-            </v-btn>
+            <v-select menu-props="auto"  chips @input="getData(selectedFilterOption)" solo flat
+                      dense :items="filterMenuItems"
+                      v-model="selectedFilterOption"
+                      label="Filter Data" item-text="name"
+                      item-value="value">
+              <template v-slot:selection="{item}">
+                <v-chip :color="item.color" dark>{{ item.name }}</v-chip>
+              </template>
+            </v-select>
           </v-col>
           <v-spacer/>
           <v-col cols="auto">
@@ -37,7 +41,7 @@
           calculate-widths
           @click:row="(item)=>editUser(item,false)"
           :headers="headers"
-          :items="activeStatus?activeDataWithSn:inactiveDataWithSn"
+          :items="tableItems"
           :search="search"
           :items-per-page="25"
           :loading="isLoading"
@@ -72,7 +76,8 @@
               </v-tooltip>
               <v-tooltip v-if="activeStatus" bottom>
                 <template v-slot:activator="{attrs,on}">
-                  <v-btn @click.stop.prevent="getFunctionalitiesByUser(item,true)" v-bind="attrs" v-on="on" fab icon x-small>
+                  <v-btn @click.stop.prevent="getFunctionalitiesByUser(item,true)" v-bind="attrs" v-on="on" fab icon
+                         x-small>
                     <v-icon>fas fa-briefcase</v-icon>
                   </v-btn>
                 </template>
@@ -135,7 +140,7 @@
         </v-data-table>
       </v-container>
     </v-card>
-    <v-dialog max-width="50%" :persistent="editingUser||creatingUser" v-model="userDialog">
+    <v-dialog scrollable max-width="50%" :persistent="editingUser||creatingUser" v-model="userDialog">
       <v-card>
         <v-toolbar
           dark
@@ -271,7 +276,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog max-width="50%" :persistent="editingFunctionalities" v-model="functionalitiesDialog">
+    <v-dialog scrollable max-width="50%" :persistent="editingFunctionalities" v-model="functionalitiesDialog">
       <v-card>
         <v-toolbar
           dark
@@ -397,7 +402,7 @@ export default {
         {text: "S.N.", value: "sno", width: "2%"},
         {text: "Name", value: "name"},
         {text: "E-mail", value: "email"},
-        {text: "Phone No.", value: "phone"},
+        {text: "Contact No.", value: "phone"},
         {text: "Status", value: "activeStatus", width: "5%"},
         {text: "Actions", value: "actions", width: "15%"},
       ],
@@ -406,7 +411,12 @@ export default {
       creatingUser: false,
       showPassword: true,
       editingFunctionalities: false,
-      functionalitiesDialog: false
+      functionalitiesDialog: false,
+      filterMenuItems: [
+        {name: "Active", value: "A", color: "green"},
+        {name: "Inactive", value: "I", color: "error"},
+      ],
+      selectedFilterOption: "A",
     }
   },
   computed: {
@@ -417,7 +427,17 @@ export default {
     },
     inactiveDataWithSn() {
       return this.inactiveData.map((d, index) => ({...d, sno: index + 1}))
-    }
+    },
+    tableItems() {
+      switch (this.selectedFilterOption) {
+        case "A":
+          return this.activeDataWithSn
+        case "I":
+          return this.inactiveDataWithSn
+        default:
+          return this.activeDataWithSn
+      }
+    },
   },
   methods: {
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
@@ -597,7 +617,7 @@ export default {
         .then((confirm) => {
           this.makePostRequest({
             route: "user/reactivate",
-            data:{
+            data: {
               ...temp.editedItem
             }
           }).then((response) => {
@@ -615,7 +635,21 @@ export default {
       });
     },
     viewMappedClients() {
-
+    },
+    getData(selectedFilterOption) {
+      switch (selectedFilterOption) {
+        case "A":
+          this.activeStatus=true;
+          this.getActiveData();
+          break;
+        case "I":
+          this.activeStatus=false;
+          this.getInactiveData();
+          break;
+        default:
+          this.activeStatus=true;
+          return this.getActiveData();
+      }
     }
   },
   mounted() {
