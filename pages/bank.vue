@@ -40,9 +40,9 @@
 
         <!-- v-dialog for addding new bank details -->
         <v-dialog v-model="addNewDialog"
-                  persistent max-width="50%">
+                  :persistent="(dialogueState.add || dialogueState.edit)" max-width="50%">
           
-          <v-card height="30vh">
+          <v-card>
             <!-- title bar-->
             <v-toolbar dark
                       flat
@@ -62,16 +62,17 @@
             <!-- adding bank details form inside v-card -->
             <v-card-text>
             <v-row>
-              <v-text-field label="Name"
+              <v-text-field label="Name" prepend-inner-icon="fa-solid fa-user"
                             :placeholder="dialogueState.placeholder" filled v-model="newName" :readonly="!(dialogueState.add || dialogueState.edit)">
               </v-text-field>
             </v-row>
-            <v-row>
-              <v-spacer></v-spacer>
-              <v-btn @click="removeNewDialogue()" class="error mr-3">Cancel</v-btn>
-              <v-btn v-if="dialogueState.add || dialogueState.edit" @click="dialogueState.add?addData():editData()" class="primary">{{this.dialogueState.btnLabel}}</v-btn>
-            </v-row>
             </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="removeNewDialogue()" class="error mr-3" v-if="dialogueState.add || dialogueState.edit">Cancel</v-btn>
+              <v-btn v-if="dialogueState.add || dialogueState.edit" @click="dialogueState.add?addData():editData()" class="primary">{{this.dialogueState.btnLabel}}</v-btn>
+            
+            </v-card-actions>
           </v-card>          
         </v-dialog>
         <!-- close v dialogue -->
@@ -223,7 +224,7 @@ export default {
         this.dialogueState.placeholder = '';
         this.dialogueState.edit = true;
         this.dialogueState.add = false;
-        this.dialogueState.btnLabel = 'Edit';
+        this.dialogueState.btnLabel = 'Save';
         this.newName = bankName;
         this.newId = bankId;
       }
