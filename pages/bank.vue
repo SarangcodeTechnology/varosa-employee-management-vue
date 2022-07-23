@@ -315,7 +315,7 @@ export default {
     },
 
     deleteItem(item){
-      this.$root.confirm('Confirm Delete', 'Are you sure?', { color: 'red' })
+      this.$root.confirm(`Confirm Delete`, `Are you sure you want to delete "${item.name}" ?`, { color: 'red' })
       .then((confirm)=>{
             this.$store.dispatch("api/makePostRequest",
             {
@@ -347,7 +347,7 @@ export default {
 
     reactivate(item){
       
-      this.$root.confirm('Confirm Reactivate', 'Are you sure?', { color: 'red' })
+      this.$root.confirm(`Confirm Reactivate`, `Are you sure you want to reactivate "${item.name}" ?`, { color: 'red' })
       .then((confirm)=>{
             this.$store.dispatch("api/makePostRequest",
             {
