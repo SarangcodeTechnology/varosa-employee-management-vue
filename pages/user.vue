@@ -493,7 +493,6 @@ export default {
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     },
     editUser(item, editingUser) {
@@ -531,6 +530,7 @@ export default {
           this.userDialog = false;
           this.editingUser = false;
         }
+      }).catch((error) => {
       })
 
     },
@@ -550,6 +550,7 @@ export default {
           this.userDialog = false;
           this.editingUser = false;
         }
+      }).catch((error) => {
       })
     },
     getFunctionalitiesByUser(item, editingFunctionalities) {
@@ -587,6 +588,7 @@ export default {
           this.functionalitiesDialog = false;
           this.editingFunctionalities = false;
         }
+      }).catch((error) => {
       })
     },
     resetPassword(item) {
@@ -631,7 +633,6 @@ export default {
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     },
     viewMappedClients() {

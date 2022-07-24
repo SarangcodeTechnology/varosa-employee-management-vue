@@ -110,7 +110,7 @@
               </v-tooltip>
               <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
                 <template v-slot:activator="{attrs,on}">
-                  <v-btn @click.stop.prevent="updateEmployeeStatus(item,true)" v-bind="attrs" v-on="on" fab icon
+                  <v-btn @click.stop.prevent="updateEmployeeStatus(item)" v-bind="attrs" v-on="on" fab icon
                          x-small>
                     <v-icon>fa-solid fa-user-edit</v-icon>
                   </v-btn>
@@ -129,7 +129,7 @@
               <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
                 <template v-slot:activator="{attrs,on}">
                   <v-btn v-bind="attrs" v-on="on" color="error" fab icon x-small
-                         @click.stop.prevent="deactiveEmployee(item)">
+                         @click.stop.prevent="deactivateEmployee(item)">
                     <v-icon>fas fa-trash-alt</v-icon>
                   </v-btn>
                 </template>
@@ -1061,14 +1061,220 @@
           <v-container fluid>
             <v-row dense>
               <v-col cols="6">
-                Annual
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                    <tr>
+                      <th>Annual Leave Details</th>
+                      <th>No. of days</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                    >
+                      <td>Annual Leaves this year</td>
+                      <td>{{
+                          annualLeaveDetails.numberOfValidLeavesThisYear - annualLeaveDetails.numberOfTakenLeavesThisYear
+                        }}
+                      </td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Taken Leaves this year</td>
+                      <td>{{ annualLeaveDetails.numberOfTakenLeavesThisYear }}</td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Available Leaves from previous year</td>
+                      <td>{{
+                          annualLeaveDetails.numberOfValidLeavesPreviousYear - annualLeaveDetails.numberOfTakenLeavesPreviousYear
+                          - annualLeaveDetails.numberOfPaidOutLeaves
+                        }}
+                      </td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Taken Leaves from previous year</td>
+                      <td>{{ annualLeaveDetails.numberOfTakenLeavesPreviousYear }}</td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Paid out Leaves previous year</td>
+                      <td>{{ annualLeaveDetails.numberOfPaidOutLeaves }}</td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Total Available Leaves</td>
+                      <td>{{
+                          annualLeaveDetails.numberOfValidLeavesThisYear
+                          + annualLeaveDetails.numberOfValidLeavesPreviousYear - annualLeaveDetails.numberOfTakenLeavesThisYear - annualLeaveDetails.numberOfTakenLeavesPreviousYear - annualLeaveDetails.numberOfPaidOutLeaves
+                        }}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+
+
               </v-col>
               <v-col cols="6">
-                Sick
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                    <tr>
+                      <th>Sick Leave Details</th>
+                      <th>No. of days</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                    >
+                      <td>Available Leaves</td>
+                      <td>{{
+                          sickLeaveDetails.numberOfValidLeavesThisYear - sickLeaveDetails.numberOfTakenLeavesThisYear
+                        }}
+                      </td>
+                    </tr>
+                    <tr
+                    >
+                      <td>Taken Leaves</td>
+                      <td>{{ sickLeaveDetails.numberOfTakenLeavesThisYear }}</td>
+                    </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog scrollable max-width="50%" v-model="updateEmployeeStatusDialog">
+      <v-card>
+        <v-toolbar
+          dark
+          flat
+          class="mb-6"
+          color="primary"
+        >
+          <v-toolbar-title>Update {{ editedTableItem.staffName }}'s Status</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn
+              icon
+              @click="updateEmployeeStatusDialog = false;"
+            >
+              <v-icon>fa-solid fa-xmark</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text>
+          <v-card
+            outlined
+            class="mb-2"
+          >
+            <v-list-item three-line>
+              <v-list-item-content>
+                <v-list-item-title class="text-h5 mb-1">
+                  {{ editedTableItem.staffName }}
+                </v-list-item-title>
+
+                <span>{{ editedTableItem.categoryName ? editedTableItem.categoryName : "" }}</span><br>
+                <span>{{ editedTableItem.email ? editedTableItem.email : "" }}</span>
+                <span>{{ editedTableItem.phone ? editedTableItem.phone : "" }}</span>
+              </v-list-item-content>
+              <v-chip
+                :color="filterMenuItems[0].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'A'"
+                dark
+                dense
+              >
+                Active
+              </v-chip>
+              <v-chip
+                :color="filterMenuItems[2].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'H'"
+                dark
+                dense
+              >
+                Hold
+              </v-chip>
+              <v-chip
+                :color="filterMenuItems[3].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'M'"
+                dark
+                dense
+              >
+                Missing
+              </v-chip>
+              <v-chip
+                :color="filterMenuItems[4].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'P'"
+                dark
+                dense
+              >
+                Resign Pending
+              </v-chip>
+              <v-chip
+                :color="filterMenuItems[5].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'R'"
+                dark
+                dense
+              >
+                Resigned
+              </v-chip>
+              <v-chip
+                :color="filterMenuItems[1].color"
+                class="ma-2"
+                v-if="selectedFilterOption === 'I'"
+                dark
+                dense
+              >
+                Inactive
+              </v-chip>
+            </v-list-item>
+          </v-card>
+          <v-container fluid>
+            <v-row dense>
+              <v-col cols="12">
+                <v-radio-group
+                  v-model="employeeStatusItem.activeStatus"
+                  column
+                >
+                  <template v-for="(item) in filterMenuItems">
+                    <v-radio
+                      v-if="item.value !== 'I'"
+                      :label="item.name"
+                      :value="item.value"
+                    ></v-radio>
+                  </template>
+
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn
+            color="error"
+            @click="updateEmployeeStatusDialog = false;"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="primary"
+            @click="changeEmployeeStatus()"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -1295,17 +1501,32 @@ export default {
       leaveDetails: {
         allLeaves: [],
         allLeavesPreviousFiscalYear: [],
-        annualLeaves: [],
-        sickLeaves: [],
-        annualLeavesPreviousFiscalYear: [],
-        sickLeavesPreviousFiscalYear: [],
-        paidLeavesPreviousFiscalYear: [],
-        annualLeaveDetails: [],
-        sickLeaveDetails: [],
+      },
+      selectedNepaliYear: new NepaliDate().getYear(),
+      selectedNepaliMonth: new NepaliDate().getMonth() + 1,
+      updateEmployeeStatusDialog: false,
+      selectedEmployeeStatus: "A",
+      employeeStatusItem: {
+        activeStatus: "A"
       }
     }
   },
   computed: {
+    ...mapGetters("leave",["annualLeaves","sickLeaves","annualLeavesPreviousFiscalYear","sickLeavesPreviousFiscalYear","paidLeavesPreviousFiscalYear"]),
+    ...mapGetters("auth", ["accessToken"]),
+    annualLeaveDetails() {
+      return this.validateLeave(true,
+        this.editedTableItem.fullTimeJoinDate ? this.editedTableItem.fullTimeJoinDate : this.editedTableItem.partTimeJoinDate,
+        this.selectedNepaliMonth, this.selectedNepaliYear, this.annualLeaves, this.annualLeavesPreviousFiscalYear,
+        this.paidLeavesPreviousFiscalYear, 0);
+    },
+
+    sickLeaveDetails() {
+      return this.validateLeave(false,
+        this.editedTableItem.fullTimeJoinDate ? this.editedTableItem.fullTimeJoinDate : this.editedTableItem.partTimeJoinDate,
+        this.selectedNepaliMonth, this.selectedNepaliYear, this.sickLeaves,
+        this.sickLeavesPreviousFiscalYear, this.paidLeavesPreviousFiscalYear, 0);
+    },
     tableItems() {
       switch (this.selectedFilterOption) {
         case "A":
@@ -1332,7 +1553,6 @@ export default {
         this.editedItem.nonWorkingDays = newValue.join("")
       }
     },
-    ...mapGetters("auth", ["accessToken"]),
     activeDataWithSn() {
       return this.activeData.map((d, index) => (
         {...d, sno: index + 1}));
@@ -1361,6 +1581,7 @@ export default {
   },
   methods: {
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
+    ...mapActions("leave", ["getEmployeeLeaveDetails"]),
     getErrors(name, model) {
       const errors = [];
       if (!model.$dirty) return errors;
@@ -1397,12 +1618,12 @@ export default {
     deleteItem(item) {
       const temp = this;
       this.editedTableItem = Object.assign({}, item);
-      this.$root.confirm('Confirm Delete', 'Are you sure you want to delete ' + item.siteName + '?')
+      this.$root.confirm('Confirm Delete', 'Are you sure you want to delete ' + item.staffName + '?')
         .then((confirm) => {
           this.makePostRequest({
-            route: "client/delete",
+            route: "employee/hardDelete",
             data: {
-              ...temp.editedItem
+              ...temp.editedTableItem
             }
           }).then((response) => {
             if (response.data.status === "OK") {
@@ -1413,7 +1634,6 @@ export default {
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     },
     editEmployee(item, editingEmployee) {
@@ -1568,43 +1788,43 @@ export default {
     updateEmployee() {
       const temp = this
       this.makePostRequest({
-        route: "client/update",
+        route: "employee/update",
         data: {
           ...temp.editedItem
         }
       }).then((response) => {
         if (response.data.status === "OK") {
           this.$store.dispatch("toast/setSnackbar", {
-            text: "Client details updated successfully"
+            text: "Employee details updated successfully"
           })
           this.getData();
           this.employeeDialog = false;
           this.editingEmployee = false;
         }
+      }).catch((error) => {
       })
     }
     ,
     reactivateEmployee(item) {
       const temp = this;
       this.editedTableItem = Object.assign({}, item);
-      this.$root.confirm(`Confirm`, `Are you sure you want to reactivate ${item.siteName}'s ?`)
+      this.$root.confirm(`Confirm`, `Are you sure you want to reactivate ${item.staffName}'s ?`)
         .then((confirm) => {
           this.makePostRequest({
-            route: "client/reactivate",
+            route: "employee/reactivate",
             data: {
-              ...temp.editedItem
+              ...temp.editedTableItem
             }
           }).then((response) => {
             if (response.data.status === "OK") {
               this.$store.dispatch("toast/setSnackbar", {
-                text: "Client reactivated successfully."
+                text: "Employee reactivated successfully."
               });
               this.getData();
 
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     }
     ,
@@ -1733,75 +1953,83 @@ export default {
       });
     }
     ,
-    updateEmployeeStatus(item, updatingEmployeeStatus) {
+    updateEmployeeStatus(item) {
+      let temp = this;
+      this.editedTableItem = Object.assign({}, item);
+      this.$store.dispatch("api/makeGetRequest",
+        {
+          route: "employee/getById",
+          params: {
+            id: item.id
+          }
+        }
+      ).then(response => {
+          if (response.data.status === "OK") {
+            /*if (!response.data.data.employeeEmergencyDetails) {
+              response.data.data.employeeEmergencyDetails = {
+                bloodGroup: "",
+                contactName: "",
+                contactNumber: "",
+                relation: "",
+                photo: [],
+                citizenship: []
+              }
+            }
+            if (!response.data.data.category) {
+              response.data.data.category = {
+                activeStatus: "",
+                name: ""
+              }
+            }
+
+            if (!response.data.data.employeeDetails) {
+              response.data.data.employeeDetails = {
+                activeStatus: "",
+                accountNumber: "",
+                ssfNo: "",
+                panNumber: null,
+                bank: {
+                  activeStatus: "",
+                  name: ""
+                }
+              }
+            }
+            if (!response.data.data.employeeDetails.bank) {
+              response.data.data.employeeDetails.bank = {
+                activeStatus: "",
+                name: ""
+              }
+            }
+            if (!response.data.data.employeeEmergencyDetails.photo) {
+              response.data.data.employeeEmergencyDetails.photo = []
+            }
+            if (!response.data.data.employeeEmergencyDetails.citizenship) {
+              response.data.data.employeeEmergencyDetails.citizenship = []
+            }
+            if (!response.data.data.partTimeJoinDate) {
+              response.data.data.partTimeJoinDate = ""
+            }
+            if (!response.data.data.fullTimeJoinDate) {
+              response.data.data.fullTimeJoinDate = ""
+            }
+            if (!response.data.data.resignDate) {
+              response.data.data.resignDate = ""
+            }
+            if (!response.data.data.dateOfBirth) {
+              response.data.data.dateOfBirth = ""
+            }*/
+            this.employeeStatusItem = response.data.data
+            this.updateEmployeeStatusDialog = true
+          }
+        }
+      ).catch((error) => {
+      });
     }
     ,
     viewLeaveDetails(item, viewingLeaveDetails) {
       this.editedTableItem = Object.assign({}, item);
       this.viewLeaveDetailsDialog = true;
-
-      let currentNepaliDate = new NepaliDate();
-      let selectedNepaliYear = currentNepaliDate.getYear();
-      let selectedNepaliMonth = currentNepaliDate.getMonth();
-
-      let requestBodyForThisFiscalYear = {
-        employeeId: this.editedTableItem.id,
-        nepaliYear: selectedNepaliYear
-      };
-      let requestBodyForPreviousFiscalYear = {
-        employeeId: this.editedTableItem.id,
-        nepaliYear: selectedNepaliYear - 1
-      };
-
-      if (selectedNepaliMonth <= 3) {
-        requestBodyForThisFiscalYear.nepaliYear = requestBodyForThisFiscalYear.nepaliYear - 1;
-        requestBodyForPreviousFiscalYear.nepaliYear = requestBodyForThisFiscalYear.nepaliYear - 1;
-      }
-
-
-      // Leave Details for current fiscal year
-      this.$store.dispatch("api/makePostRequest",
-        {
-          route: "employeeLeaves/get/nepaliFiscalYear",
-          data: {
-            ...requestBodyForThisFiscalYear
-          }
-        }
-      ).then(response => {
-        if (response.data.status === "OK") {
-          this.leaveDetails.allLeaves = response.data.data;
-        }
-      }).catch((error) => {
-      });
-
-      // Leave Details for previous fiscal year
-      this.$store.dispatch("api/makePostRequest",
-        {
-          route: "employeeLeaves/get/nepaliFiscalYear",
-          data: {
-            ...requestBodyForPreviousFiscalYear
-          }
-        }
-      ).then(response => {
-        if (response.data.status === "OK") {
-          this.leaveDetails.allLeavesPreviousFiscalYear = response.data.data;
-        }
-      }).catch((error) => {
-      });
-      this.leaveDetails.annualLeaves = this.leaveDetails.allLeaves.filter(item => item.leaveType === 'ANNUAL');
-      this.leaveDetails.sickLeaves = this.leaveDetails.allLeaves.filter(item => item.leaveType === 'SICK');
-
-      this.leaveDetails.annualLeavesPreviousFiscalYear = this.leaveDetails.allLeavesPreviousFiscalYear.filter(item => item.leaveType === 'ANNUAL');
-      this.leaveDetails.sickLeavesPreviousFiscalYear = this.leaveDetails.allLeavesPreviousFiscalYear.filter(item => item.leaveType === 'SICK');
-      this.leaveDetails.paidLeavesPreviousFiscalYear = this.leaveDetails.allLeavesPreviousFiscalYear.filter(item => item.leaveType === 'PAID');
-      this.leaveDetails.annualLeaveDetails = this.validateLeave(true,
-        this.editedTableItem.fullTimeJoinDate ? this.editedTableItem.fullTimeJoinDate : this.editedTableItem.partTimeJoinDate,
-        selectedNepaliMonth, selectedNepaliYear, this.leaveDetails.annualLeaves, this.leaveDetails.annualLeavesPreviousFiscalYear,
-        this.leaveDetails.paidLeavesPreviousFiscalYear, 0);
-      this.leaveDetails.sickLeaveDetails = this.validateLeave(false,
-        this.editedTableItem.fullTimeJoinDate ? this.editedTableItem.fullTimeJoinDate : this.editedTableItem.partTimeJoinDate,
-        selectedNepaliMonth, selectedNepaliYear, this.leaveDetails.sickLeaves,
-        this.leaveDetails.sickLeavesPreviousFiscalYear, this.leaveDetails.paidLeavesPreviousFiscalYear, 0);
+      this.getEmployeeLeaveDetails(this.editedTableItem);
     },
     validateLeave(isAnnualLeave, employeeJoinDate,
                   selectedNepaliMonth, selectedNepaliYear,
@@ -1867,9 +2095,150 @@ export default {
       };
     },
     cloneEmployee(item, cloningEmployee) {
+      let temp = this;
+      this.editedTableItem = Object.assign({}, item);
+      this.$store.dispatch("api/makeGetRequest",
+        {
+          route: "employee/getById",
+          params: {
+            id: item.id
+          }
+        }
+      ).then(response => {
+          if (response.data.status === "OK") {
+            let data = response.data.data;
+            // this.editedItem=this.defaultItem;
+          /*  this.editedItem.activeStatus = data.activeStatus ? data.activeStatus : "";
+            this.editedItem.vsNo = data.vsNo ? data.vsNo : "";
+            this.editedItem.staffName = data.staffName ? data.staffName : "";
+            this.editedItem.phone = data.phone ? data.phone : "";
+            this.editedItem.dateOfBirth = data.dateOfBirth ? data.dateOfBirth : "";
+            this.editedItem.permanentAddress = data.permanentAddress ? data.permanentAddress : "";
+            this.editedItem.temporaryAddress = data.temporaryAddress ? data.temporaryAddress : "";
+            this.editedItem.partTimeJoinDate = data.partTimeJoinDate ? data.partTimeJoinDate : "";
+            this.editedItem.fullTimeJoinDate = data.fullTimeJoinDate ? data.fullTimeJoinDate : "";
+            this.editedItem.resignDate = data.resignDate ? data.resignDate : "";
+            this.editedItem.category.activeStatus = data.category.activeStatus ? data.activeStatus : "";
+            this.editedItem.category.name = data.category.name ? data.name : "";
+            this.editedItem.workstation = data.workstation ? data.workstation : "";
+            this.editedItem.nonWorkingDays = data.nonWorkingDays ? data.nonWorkingDays : "";
+            this.editedItem.useNepaliCalendar = data.useNepaliCalendar ? data.useNepaliCalendar : false;
+            this.editedItem.assignedHours = data.assignedHours ? data.assignedHours : null;
+            this.editedItem.basicHours = data.basicHours ? data.basicHours : null;
+            this.editedItem.email = data.email ? data.email : "";
+            this.editedItem.gender = data.gender ? data.gender : "";
+            this.editedItem.employeeDetails.activeStatus = data.employeeDetails.activeStatus ? data.employeeDetails.activeStatus : "";
+            this.editedItem.employeeDetails.accountNumber = data.employeeDetails.accountNumber ? data.employeeDetails.accountNumber : "";
+            this.editedItem.employeeDetails.ssfNo = data.employeeDetails.ssfNo ? data.employeeDetails.ssfNo : "";
+            this.editedItem.employeeDetails.panNumber = data.employeeDetails.panNumber ? data.employeeDetails.panNumber : null;
+            this.editedItem.employeeDetails.bank.activeStatus = data.employeeDetails.bank.activeStatus ? data.employeeDetails.bank.activeStatus : "";
+            this.editedItem.employeeDetails.bank.name = data.employeeDetails.bank.name ? data.employeeDetails.bank.name : "";
+            this.editedItem.employeeDetails.bankBranch = data.employeeDetails.bankBranch ? data.employeeDetails.bankBranch : "";
+            this.editedItem.employeeDetails.basicSalary = data.employeeDetails.basicSalary ? data.employeeDetails.basicSalary : null;
+            this.editedItem.employeeDetails.dearnessAllowance = data.employeeDetails.dearnessAllowance ? data.employeeDetails.dearnessAllowance : null;
+            this.editedItem.employeeDetails.otherAllowance = data.employeeDetails.otherAllowance ? data.employeeDetails.otherAllowance : null;
+            this.editedItem.employeeDetails.specialAllowance = data.employeeDetails.specialAllowance ? data.employeeDetails.specialAllowance : null;
+            this.editedItem.employeeDetails.direnessAllowance = data.employeeDetails.direnessAllowance ? data.employeeDetails.direnessAllowance : null;
+            this.editedItem.employeeDetails.hardnessAllowance = data.employeeDetails.hardnessAllowance ? data.employeeDetails.hardnessAllowance : null;
+            this.editedItem.employeeDetails.overtimeRate = data.employeeDetails.overtimeRate ? data.employeeDetails.overtimeRate : null;
+            this.editedItem.employeeDetails.holidayRate = data.employeeDetails.holidayRate ? data.employeeDetails.holidayRate : null;
+
+            this.editedItem.employeeEmergencyDetails.bloodGroup = data.employeeEmergencyDetails.bloodGroup ? data.employeeEmergencyDetails.bloodGroup : "";
+            this.editedItem.employeeEmergencyDetails.contactName = data.employeeEmergencyDetails.contactName ? data.employeeEmergencyDetails.contactName : "";
+            this.editedItem.employeeEmergencyDetails.contactNumber = data.employeeEmergencyDetails.contactNumber ? data.employeeEmergencyDetails.contactNumber : "";
+            this.editedItem.employeeEmergencyDetails.relation = data.employeeEmergencyDetails.relation ? data.employeeEmergencyDetails.relation : "";
+            this.editedItem.employeeEmergencyDetails.photo = data.employeeEmergencyDetails.photo ? data.employeeEmergencyDetails.photo : "";
+            this.editedItem.employeeEmergencyDetails.citizenship = data.employeeEmergencyDetails.citizenship ? data.employeeEmergencyDetails.citizenship : "";
+
+*/
+             if (!response.data.data.employeeEmergencyDetails) {
+               response.data.data.employeeEmergencyDetails = {
+                 bloodGroup: "",
+                 contactName: "",
+                 contactNumber: "",
+                 relation: "",
+                 photo: [],
+                 citizenship: []
+               }
+             }
+             if (!response.data.data.category) {
+               response.data.data.category = {
+                 activeStatus: "",
+                 name: ""
+               }
+             }
+
+             if (!response.data.data.employeeDetails) {
+               response.data.data.employeeDetails = {
+                 activeStatus: "",
+                 accountNumber: "",
+                 ssfNo: "",
+                 panNumber: null,
+                 bank: {
+                   activeStatus: "",
+                   name: ""
+                 }
+               }
+             }
+             if (!response.data.data.employeeDetails.bank) {
+               response.data.data.employeeDetails.bank = {
+                 activeStatus: "",
+                 name: ""
+               }
+             }
+             if (!response.data.data.employeeEmergencyDetails.photo) {
+               response.data.data.employeeEmergencyDetails.photo = []
+             }
+             if (!response.data.data.employeeEmergencyDetails.citizenship) {
+               response.data.data.employeeEmergencyDetails.citizenship = []
+             }
+             if (!response.data.data.partTimeJoinDate) {
+               response.data.data.partTimeJoinDate = ""
+             }
+             if (!response.data.data.fullTimeJoinDate) {
+               response.data.data.fullTimeJoinDate = ""
+             }
+             if (!response.data.data.resignDate) {
+               response.data.data.resignDate = ""
+             }
+             if (!response.data.data.dateOfBirth) {
+               response.data.data.dateOfBirth = ""
+             }
+            this.editedItem = response.data.data
+            this.employeeDialog = true
+            this.step = "1"
+            if (cloningEmployee) {
+              this.creatingEmployee = cloningEmployee
+            }
+          }
+        }
+      ).catch((error) => {
+
+      });
+
+
     }
     ,
-    deactiveEmployee(item) {
+    deactivateEmployee(item) {
+      const temp = this;
+      this.editedTableItem = Object.assign({}, item);
+      this.$root.confirm('Confirm Delete', 'Are you sure you want to deactivate ' + item.staffName + '?')
+        .then((confirm) => {
+          this.makePostRequest({
+            route: "employee/delete",
+            data: {
+              ...temp.editedTableItem
+            }
+          }).then((response) => {
+            if (response.data.status === "OK") {
+              this.$store.dispatch("toast/setSnackbar", {
+                text: "Client deactivated successfully"
+              });
+              this.getData();
+            }
+          })
+        }).catch((error) => {
+      });
     },
     getNumberOfMonthsSinceJoined(selectedNepaliMonth, employeeJoinMonth, selectedNepaliYear, employeeJoinYear) {
       const numberOfMonths = selectedNepaliMonth - employeeJoinMonth + (selectedNepaliYear - employeeJoinYear) * 12;
@@ -1929,6 +2298,25 @@ export default {
           this.mappedClientsDialog = false;
           this.viewingMappedClients = false;
         }
+      }).catch((error) => {
+      })
+    },
+    changeEmployeeStatus() {
+      const temp = this;
+      this.makePostRequest({
+        route: "employee/updateStatus",
+        data: {
+          ...temp.employeeStatusItem
+        }
+      }).then((response) => {
+        if (response.data.status === "OK") {
+          this.$store.dispatch("toast/setSnackbar", {
+            text: "Employee status updated successfully"
+          })
+          this.getData();
+          temp.updateEmployeeStatusDialog = false;
+        }
+      }).catch((error) => {
       })
     }
   }

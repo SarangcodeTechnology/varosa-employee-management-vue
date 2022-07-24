@@ -797,7 +797,6 @@ export default {
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     },
     editClient(item, editingClient) {
@@ -845,6 +844,7 @@ export default {
           this.clientDialog = false;
           this.editingClient = false;
         }
+      }).catch((error) => {
       })
 
     },
@@ -864,6 +864,7 @@ export default {
           this.clientDialog = false;
           this.editingClient = false;
         }
+      }).catch((error) => {
       })
     },
     reactivateClient(item) {
@@ -887,7 +888,6 @@ export default {
             }
           })
         }).catch((error) => {
-        console.log(error);
       });
     },
     navigateToMonthlyRoster(item) {
@@ -960,6 +960,7 @@ export default {
           this.employeeCategoriesDialog = false;
           this.viewingEmployeeCategories = false;
         }
+      }).catch((error) => {
       })
     },
     deleteCategory(data) {
