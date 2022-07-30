@@ -36,7 +36,7 @@ const mutations = {
 };
 
 const actions = {
-  loginOrRegister(state, payload) {
+  loginOrRegister({state,dispatch,commit}, payload) {
     let temp = this;
     return new Promise((resolve, reject) => {
       this.$axios.post(process.env.BACKEND_API_URL + payload.route, payload.data, {
@@ -44,9 +44,9 @@ const actions = {
           Accept: "application/json",
         }
       }).then(function (response) {
-        state.commit('SET_ACCESS_TOKEN', response.headers.authorization);
-        state.dispatch("getAllActiveFunctionalitiesMappings");
-        state.dispatch("getCurrentUserFunctionalitiesMappings");
+        commit('SET_ACCESS_TOKEN', response.headers.authorization);
+        dispatch("getAllActiveFunctionalitiesMappings");
+        dispatch("getCurrentUserFunctionalitiesMappings");
         temp.app.router.push("/");
         resolve(response);
       }).catch(function (error) {
@@ -70,7 +70,7 @@ const actions = {
   },
   async getCurrentUserFunctionalitiesMappings(state) {
     const temp = this;
-    temp.$axios.get(process.env.BACKEND_API_URL + 'functionality/mappings/currentUser', {
+    await temp.$axios.get(process.env.BACKEND_API_URL + 'functionality/mappings/currentUser', {
       headers: {
         Accept: "application/json",
         Authorization: temp.$cookiz.get('accessToken')
