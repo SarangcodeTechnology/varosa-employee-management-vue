@@ -378,7 +378,7 @@
                         :readonly="!editingEmployee && !creatingEmployee"
                         dense
                         filled
-                        label="VS No.*"
+                        label="V.S. No.*"
                         v-model="editedItem.vsNo"
                         :error-messages="getErrors('vsNo', $v.editedItem.vsNo)"
                         @blur="$v.editedItem.vsNo.$touch()"
@@ -1424,7 +1424,7 @@ export default {
       },
       headers: [
         {text: "S.N.", value: "sno", width: "2%"},
-        {text: "VS No.", value: "vsNo"},
+        {text: "V.S. No.", value: "vsNo"},
         {text: "Staff Name", value: "staffName"},
         {text: "Phone", value: "phone"},
         {text: "Branch", value: "email"},
@@ -1587,7 +1587,7 @@ export default {
       if (!model.$dirty) return errors;
       switch (name) {
         case "vsNo":
-          !model.required && errors.push("VS No. is required.");
+          !model.required && errors.push("V.S. No. is required.");
           break;
         case "staffName":
           !model.required && errors.push("Staff name is required");
