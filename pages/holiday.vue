@@ -19,7 +19,32 @@
               </template>
             </v-select>
           </v-col>
+          <!-- toggle different year -->
+          <v-col cols="auto">
+          
+              <v-btn-toggle>
+                <v-btn
+                  @click="selectHolidayYearBack()"
+                  fab
+                  small
+                  icon>
+                  <v-icon>fas fa-angle-left</v-icon>
+                </v-btn>
+                <v-text-field v-model="nepaliDate" dense outlined readonly style="width:4vw" >
+    
+                </v-text-field>
+
+                <v-btn
+                  @click="selectHolidayYearForward()"
+                  fab
+                  small
+                  icon>
+                  <v-icon>fas fa-angle-right</v-icon>
+                </v-btn>
+              </v-btn-toggle>
+          </v-col>
           <v-spacer/>
+
           <v-col cols="auto">
             <v-btn color="green" dark>
               <v-icon left>fas fa-file-excel</v-icon>
@@ -132,6 +157,7 @@
               >
                 Inactive
             </v-chip>
+            
         </template>
         <!-- actions in data table -->
                     
@@ -448,6 +474,18 @@ console.log(this.nepDate)
       })
     },
 
+    selectHolidayYearBack(){
+      console.log('year selected');
+      this.nepaliDate -= 1;
+      this.getData();
+    },
+
+     selectHolidayYearForward(){
+      console.log('year selected');
+      this.nepaliDate += 1;
+      this.getData();
+    },
+
   },
   mounted(){
     this.getData();
@@ -470,5 +508,6 @@ console.log(this.nepDate)
   background: rgba(0, 0, 0, 0.06);
   border-bottom: solid 1px #212121 !important;
 }
+
 
 </style>
