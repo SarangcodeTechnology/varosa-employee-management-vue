@@ -40,7 +40,7 @@
 
         <!-- v-dialog for addding new category management details -->
         <v-dialog v-model="addNewDialog"
-                  :persistent="(dialogueState.add || dialogueState.edit)" max-width="50%">
+                  :persistent="(dialogueState.add || dialogueState.edit)" max-width="50%" scrollable>
           
           <v-card>
             <!-- title bar-->
@@ -60,11 +60,29 @@
               </v-toolbar-items>
             </v-toolbar>
             <!-- adding category management details form inside v-card -->
-            <v-card-text>
+            <v-card-text style="height:50vh" >
             <v-row>
               <v-text-field label="Name" prepend-inner-icon="fa-solid fa-user"
-                            :placeholder="dialogueState.placeholder" filled v-model="newName" :readonly="!(dialogueState.add || dialogueState.edit)">
+                            :placeholder="dialogueState.placeholder.name" filled v-model="newName" :readonly="!(dialogueState.add || dialogueState.edit)">
               </v-text-field>
+            </v-row>
+             <v-row>
+
+<v-input :disabled="!(dialogueState.add || dialogueState.edit)" style="margin-top:-22px;"
+                      >
+                        <v-row no-gutters>
+                          <v-col cols="12">
+                            <span style="font-size:12px;">Nepali Date</span>
+                          </v-col>
+                          <v-col cols="12">
+                            <VNepaliDatePicker classValue="nepali-datepicker" v-model="nepDate"
+                                               calenderType="Nepali" placeholder="yyyy-mm-dd" format="YYYY-MM-DD"/>
+                          </v-col>
+                        </v-row>
+                      </v-input>
+            </v-row>
+             <v-row>
+                              <v-text-field :value="convertNepaliToEnglishDate" readonly></v-text-field>
             </v-row>
             </v-card-text>
             <v-card-actions>
@@ -85,7 +103,7 @@
                       :loading="isloading"
                       :items-per-page="25"
                       calculate-widths
-                      @click:row="(item)=>addNewDialogue('View', item.name)"
+                      @click:row="(item)=>addNewDialogue('View', item.name, item.id, item.englishFullDate, item.nepaliFullDate)"
                       :footer-props="{
                         showFirstLastPage: true,
                         firstIcon : 'fas fa-angle-double-left',
@@ -120,31 +138,31 @@
         <template #item.actions="{item}"> 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon @click="addNewDialogue('View', item.name),''" v-on="on" v-bind="attrs"><v-icon> fas fa-eye</v-icon></v-btn>
+            <v-btn icon @click="addNewDialogue('View', item.name, item.id, item.englishFullDate, item.nepaliFullDate)" v-on="on" v-bind="attrs"><v-icon> fas fa-eye</v-icon></v-btn>
             
           </template>
-          <span>View Category</span>
+          <span>View Holiday</span>
         </v-tooltip>
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-          <v-btn icon @click.stop.prevent="addNewDialogue('Edit', item.name, item.id)" v-if="selectedFilterOption === 'A'" v-on="on" v-bind="attrs"><v-icon> fas fa-pencil</v-icon></v-btn>
+          <v-btn icon @click.stop.prevent="addNewDialogue('Edit', item.name, item.id, item.englishFullDate, item.nepaliFullDate)" v-if="selectedFilterOption === 'A'" v-on="on" v-bind="attrs"><v-icon> fas fa-pencil</v-icon></v-btn>
         </template>
-          <span>Edit Category</span>
+          <span>Edit Holiday</span>
         </v-tooltip>
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-if="selectedFilterOption === 'I'"  @click.stop.prevent="reactivate(item)" v-on="on" v-bind="attrs"><v-icon> fas fa-unlock</v-icon></v-btn>
           </template>
-          <span>Reactivate Category</span>
+          <span>Reactivate Holiday</span>
         </v-tooltip>
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
           <v-btn icon @click.stop.prevent="deleteItem(item)" v-if="selectedFilterOption === 'A'" v-on="on" v-bind="attrs" color="error"><v-icon> fas fa-trash-alt</v-icon></v-btn>
            </template>
-          <span>Delete Category</span>
+          <span>Delete Holiday</span>
         </v-tooltip>
 
         </template>
@@ -160,9 +178,15 @@
 
 <script>
 
+import VNepaliDatePicker from 'v-nepalidatepicker';
+import NepaliDate from 'nepali-date-converter';
+
 
 export default {
   name: "HolidayManagement",
+  components: {
+    VNepaliDatePicker,
+  },
   data() {
     return {
       nepaliDate : 2079,
@@ -174,6 +198,7 @@ export default {
       addNewDialog: false,
 
       newName: '',
+      nepDate: '2079-01-01',
       newId: -1,
 
       filterMenuItems: [
@@ -194,7 +219,11 @@ export default {
       //dialogue state object
       dialogueState:{
         type: '',
-        placeholder: '',
+        placeholder: {
+          name: '',
+          dateN: '',
+          dateE: '',
+        },
         add : false,
         edit: false,
         btnLabel: '',
@@ -204,11 +233,25 @@ export default {
       
       }
   },
+  computed:{
+
+    convertNepaliToEnglishDate(){
+
+      // accepts nepali date in format of 'yy-mm-dd' 
+      // and returns english date in format of 'yy-mm-dd'
+console.log(this.nepDate)
+      let engDate = new NepaliDate(parseInt(this.nepDate.split('-')[0]), parseInt(this.nepDate.split('-')[1]) - 1, parseInt(this.nepDate.split('-')[2])).getAD();
+      let convertedDate = engDate.year + '-' + engDate.month + '-' + engDate.date;
+      return convertedDate;
+    }
+  },
   methods: {
-     addNewDialogue(dialogueStatus, categoryName, categoryId){
+     addNewDialogue(dialogueStatus, holidayName, holidayId, englishdate, nepalidate){
       if(dialogueStatus == 'Add'){
         this.dialogueState.type = dialogueStatus;
-        this.dialogueState.placeholder = 'Add New Category';
+        this.dialogueState.placeholder.name = 'Add New Holiday';
+        this.dialogueState.placeholder.dateN = 'Add New Nepali Date';
+        this.dialogueState.placeholder.dateE = 'Add New English Date';
         this.dialogueState.add = true;
         this.dialogueState.edit = false;
         this.dialogueState.btnLabel = 'Add New';
@@ -216,24 +259,33 @@ export default {
       }else if(dialogueStatus == 'View'){
         console.log('View item here');
         this.dialogueState.type = dialogueStatus;
-        this.dialogueState.placeholder = '';
+        this.dialogueState.placeholder.name = '';
+        this.dialogueState.placeholder.dateN = '';
+        this.dialogueState.placeholder.dateE = '';
         this.dialogueState.add = false;
         this.dialogueState.edit = false;
-        this.newName = categoryName;
+        this.newName = holidayName;
+        this.nepDate = nepalidate;
+        
+        
       }else if(dialogueStatus == 'Edit'){
         console.log('edit item here');
         this.dialogueState.type = dialogueStatus;
-        this.dialogueState.placeholder = '';
+        this.dialogueState.placeholder.name = '';
+        this.dialogueState.placeholder.dateN = '';
+        this.dialogueState.placeholder.dateE = '';
         this.dialogueState.edit = true;
         this.dialogueState.add = false;
         this.dialogueState.btnLabel = 'Save';
-        this.newName = categoryName;
-        this.newId = categoryId;
+        this.newName = holidayName;
+        this.newId = holidayId;
       }
       this.addNewDialog=true
       },
       
      removeNewDialogue(){this.addNewDialog=false},
+
+    //  handle api requests
 
      getActiveData() {
       this.$store.dispatch("api/makeGetRequest",
@@ -278,12 +330,22 @@ export default {
         this.getInActiveData();
       }
     },
+
     addData(){
       this.$store.dispatch("api/makePostRequest",
       {
-        route: "category/registerNew",
+        route: "holiday/registerNew",
         data: {
+          // worked nicely
           name: this.newName,
+          nepaliFullDate: "2079-1-25",
+          englishFullDate: "2022-5-8",
+          nepaliDay: 25,
+          nepaliMonth: 1,
+          nepaliYear: 2079,
+          englishDay: 8,
+          englishMonth: 5,
+          englishYear: 2022
           
         }
       }
@@ -300,13 +362,23 @@ export default {
       });
       this.removeNewDialogue();
     },
+
     editData(){
       this.$store.dispatch("api/makePostRequest",
       {
-        route: "category/update",
-        data: {
+        route: "holiday/update",
+        data: {   
           id: this.newId,
           name: this.newName,
+          nepaliFullDate: "2079-1-17",
+          englishFullDate: "2022-4-30",
+          nepaliDay: 17,
+          nepaliMonth: 1,
+          nepaliYear: 2079,
+          englishDay: 30,
+          englishMonth: 4,
+          englishYear: 2022
+        
           
         }
       }
@@ -328,14 +400,8 @@ export default {
       .then((confirm)=>{
             this.$store.dispatch("api/makePostRequest",
             {
-            route: "category/delete",
-            data: {
-              "id": item.id,
-              "activeStatus": item.activeStatus,
-              "createdAt": item.createdAt,
-              "updatedAt": item.updatedAt,
-              "name": item.name
-            }
+            route: "holiday/delete",
+            data: item,
             }
           ).then(response => {
             if (response.data.status === "OK") {
@@ -349,6 +415,7 @@ export default {
           });
       }).catch((error)=>{
         console.log("Failed deleting category details " + error);
+      
       })
       
       
@@ -360,14 +427,8 @@ export default {
       .then((confirm)=>{
             this.$store.dispatch("api/makePostRequest",
             {
-            route: "category/reactivate",
-            data: {
-              "id": item.id,
-              "activeStatus": item.activeStatus,
-              "createdAt": item.createdAt,
-              "updatedAt": item.updatedAt,
-              "name": item.name
-            }
+            route: "holiday/reactivate",
+            data: item,
             }
           ).then(response => {
             if (response.data.status === "OK") {
@@ -385,7 +446,8 @@ export default {
         
         
       })
-    }
+    },
+
   },
   mounted(){
     this.getData();
@@ -395,6 +457,18 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
+
+.nepali-datepicker {
+  display: flex;
+  min-height: 52px !important;
+  width: 100% !important;
+  padding: 0 12px;
+  margin-bottom: 4px;
+  align-items: stretch;
+  border-radius: 5px 5px 0 0;
+  background: rgba(0, 0, 0, 0.06);
+  border-bottom: solid 1px #212121 !important;
+}
 
 </style>
