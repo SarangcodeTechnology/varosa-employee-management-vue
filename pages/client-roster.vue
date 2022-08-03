@@ -71,6 +71,55 @@
 
             </v-col>
           </v-row>
+          <v-row style="margin-top:-175px;" justify="end">
+            <v-col cols="auto">
+              <v-row no-gutters>
+                <v-col cols="auto">
+                  <h4>INDEX</h4>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="light-green" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Weekend</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="orange" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="pink" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Sick Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="red" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Absent</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="yellow" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Holiday</v-col>
+              </v-row>
+            </v-col>
+          </v-row>
           <v-row>
             <v-spacer/>
             <v-col cols="auto">
@@ -1305,7 +1354,7 @@ export default {
               this.$store.dispatch("toast/setSnackbar", {
                 text: "Reliever deleted successfully"
               });
-            }else{
+            } else {
               temp.$store.dispatch("toast/setSnackbar", {
                 icon: "fa-solid fa-circle-xmark",
                 color: "error",
