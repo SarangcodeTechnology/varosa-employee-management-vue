@@ -47,7 +47,6 @@ const actions = {
         commit('SET_ACCESS_TOKEN', response.headers.authorization);
         dispatch("getAllActiveFunctionalitiesMappings");
         dispatch("getCurrentUserFunctionalitiesMappings");
-        temp.app.router.push("/");
         resolve(response);
       }).catch(function (error) {
         reject(error);

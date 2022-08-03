@@ -522,6 +522,7 @@
                                 </v-col>
                                 <v-col class="mr-2" v-for="(weekday,i) in weekdays" :key="i" cols="auto">
                                   <v-checkbox
+                                    @change="setBasicHours(editedItem.assignedHours)"
                                     :readonly="!editingEmployee && !creatingEmployee"
                                     :label="weekday.name" :value="weekday.id.toString()"
                                     v-model="nonWorkingDays" multiple>
@@ -550,6 +551,7 @@
                         filled
                         label="Hours per day*"
                         v-model="editedItem.assignedHours"
+                        @input="setBasicHours(editedItem.assignedHours)"
                         :error-messages="getErrors('assignedHours', $v.editedItem.assignedHours)"
                         @blur="$v.editedItem.assignedHours.$touch()"
                       ></v-text-field>
@@ -1512,7 +1514,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("leave",["annualLeaves","sickLeaves","annualLeavesPreviousFiscalYear","sickLeavesPreviousFiscalYear","paidLeavesPreviousFiscalYear"]),
+    ...mapGetters("leave", ["annualLeaves", "sickLeaves", "annualLeavesPreviousFiscalYear", "sickLeavesPreviousFiscalYear", "paidLeavesPreviousFiscalYear"]),
     ...mapGetters("auth", ["accessToken"]),
     annualLeaveDetails() {
       return this.validateLeave(true,
@@ -1582,6 +1584,10 @@ export default {
   methods: {
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
     ...mapActions("leave", ["getEmployeeLeaveDetails"]),
+    setBasicHours(assignedHours) {
+      const numberOfWeekends = this.nonWorkingDays.length;
+      this.editedItem.basicHours=(assignedHours || 0) * (30 - numberOfWeekends * 4);
+    },
     getErrors(name, model) {
       const errors = [];
       if (!model.$dirty) return errors;
@@ -2108,102 +2114,102 @@ export default {
           if (response.data.status === "OK") {
             let data = response.data.data;
             // this.editedItem=this.defaultItem;
-          /*  this.editedItem.activeStatus = data.activeStatus ? data.activeStatus : "";
-            this.editedItem.vsNo = data.vsNo ? data.vsNo : "";
-            this.editedItem.staffName = data.staffName ? data.staffName : "";
-            this.editedItem.phone = data.phone ? data.phone : "";
-            this.editedItem.dateOfBirth = data.dateOfBirth ? data.dateOfBirth : "";
-            this.editedItem.permanentAddress = data.permanentAddress ? data.permanentAddress : "";
-            this.editedItem.temporaryAddress = data.temporaryAddress ? data.temporaryAddress : "";
-            this.editedItem.partTimeJoinDate = data.partTimeJoinDate ? data.partTimeJoinDate : "";
-            this.editedItem.fullTimeJoinDate = data.fullTimeJoinDate ? data.fullTimeJoinDate : "";
-            this.editedItem.resignDate = data.resignDate ? data.resignDate : "";
-            this.editedItem.category.activeStatus = data.category.activeStatus ? data.activeStatus : "";
-            this.editedItem.category.name = data.category.name ? data.name : "";
-            this.editedItem.workstation = data.workstation ? data.workstation : "";
-            this.editedItem.nonWorkingDays = data.nonWorkingDays ? data.nonWorkingDays : "";
-            this.editedItem.useNepaliCalendar = data.useNepaliCalendar ? data.useNepaliCalendar : false;
-            this.editedItem.assignedHours = data.assignedHours ? data.assignedHours : null;
-            this.editedItem.basicHours = data.basicHours ? data.basicHours : null;
-            this.editedItem.email = data.email ? data.email : "";
-            this.editedItem.gender = data.gender ? data.gender : "";
-            this.editedItem.employeeDetails.activeStatus = data.employeeDetails.activeStatus ? data.employeeDetails.activeStatus : "";
-            this.editedItem.employeeDetails.accountNumber = data.employeeDetails.accountNumber ? data.employeeDetails.accountNumber : "";
-            this.editedItem.employeeDetails.ssfNo = data.employeeDetails.ssfNo ? data.employeeDetails.ssfNo : "";
-            this.editedItem.employeeDetails.panNumber = data.employeeDetails.panNumber ? data.employeeDetails.panNumber : null;
-            this.editedItem.employeeDetails.bank.activeStatus = data.employeeDetails.bank.activeStatus ? data.employeeDetails.bank.activeStatus : "";
-            this.editedItem.employeeDetails.bank.name = data.employeeDetails.bank.name ? data.employeeDetails.bank.name : "";
-            this.editedItem.employeeDetails.bankBranch = data.employeeDetails.bankBranch ? data.employeeDetails.bankBranch : "";
-            this.editedItem.employeeDetails.basicSalary = data.employeeDetails.basicSalary ? data.employeeDetails.basicSalary : null;
-            this.editedItem.employeeDetails.dearnessAllowance = data.employeeDetails.dearnessAllowance ? data.employeeDetails.dearnessAllowance : null;
-            this.editedItem.employeeDetails.otherAllowance = data.employeeDetails.otherAllowance ? data.employeeDetails.otherAllowance : null;
-            this.editedItem.employeeDetails.specialAllowance = data.employeeDetails.specialAllowance ? data.employeeDetails.specialAllowance : null;
-            this.editedItem.employeeDetails.direnessAllowance = data.employeeDetails.direnessAllowance ? data.employeeDetails.direnessAllowance : null;
-            this.editedItem.employeeDetails.hardnessAllowance = data.employeeDetails.hardnessAllowance ? data.employeeDetails.hardnessAllowance : null;
-            this.editedItem.employeeDetails.overtimeRate = data.employeeDetails.overtimeRate ? data.employeeDetails.overtimeRate : null;
-            this.editedItem.employeeDetails.holidayRate = data.employeeDetails.holidayRate ? data.employeeDetails.holidayRate : null;
+            /*  this.editedItem.activeStatus = data.activeStatus ? data.activeStatus : "";
+              this.editedItem.vsNo = data.vsNo ? data.vsNo : "";
+              this.editedItem.staffName = data.staffName ? data.staffName : "";
+              this.editedItem.phone = data.phone ? data.phone : "";
+              this.editedItem.dateOfBirth = data.dateOfBirth ? data.dateOfBirth : "";
+              this.editedItem.permanentAddress = data.permanentAddress ? data.permanentAddress : "";
+              this.editedItem.temporaryAddress = data.temporaryAddress ? data.temporaryAddress : "";
+              this.editedItem.partTimeJoinDate = data.partTimeJoinDate ? data.partTimeJoinDate : "";
+              this.editedItem.fullTimeJoinDate = data.fullTimeJoinDate ? data.fullTimeJoinDate : "";
+              this.editedItem.resignDate = data.resignDate ? data.resignDate : "";
+              this.editedItem.category.activeStatus = data.category.activeStatus ? data.activeStatus : "";
+              this.editedItem.category.name = data.category.name ? data.name : "";
+              this.editedItem.workstation = data.workstation ? data.workstation : "";
+              this.editedItem.nonWorkingDays = data.nonWorkingDays ? data.nonWorkingDays : "";
+              this.editedItem.useNepaliCalendar = data.useNepaliCalendar ? data.useNepaliCalendar : false;
+              this.editedItem.assignedHours = data.assignedHours ? data.assignedHours : null;
+              this.editedItem.basicHours = data.basicHours ? data.basicHours : null;
+              this.editedItem.email = data.email ? data.email : "";
+              this.editedItem.gender = data.gender ? data.gender : "";
+              this.editedItem.employeeDetails.activeStatus = data.employeeDetails.activeStatus ? data.employeeDetails.activeStatus : "";
+              this.editedItem.employeeDetails.accountNumber = data.employeeDetails.accountNumber ? data.employeeDetails.accountNumber : "";
+              this.editedItem.employeeDetails.ssfNo = data.employeeDetails.ssfNo ? data.employeeDetails.ssfNo : "";
+              this.editedItem.employeeDetails.panNumber = data.employeeDetails.panNumber ? data.employeeDetails.panNumber : null;
+              this.editedItem.employeeDetails.bank.activeStatus = data.employeeDetails.bank.activeStatus ? data.employeeDetails.bank.activeStatus : "";
+              this.editedItem.employeeDetails.bank.name = data.employeeDetails.bank.name ? data.employeeDetails.bank.name : "";
+              this.editedItem.employeeDetails.bankBranch = data.employeeDetails.bankBranch ? data.employeeDetails.bankBranch : "";
+              this.editedItem.employeeDetails.basicSalary = data.employeeDetails.basicSalary ? data.employeeDetails.basicSalary : null;
+              this.editedItem.employeeDetails.dearnessAllowance = data.employeeDetails.dearnessAllowance ? data.employeeDetails.dearnessAllowance : null;
+              this.editedItem.employeeDetails.otherAllowance = data.employeeDetails.otherAllowance ? data.employeeDetails.otherAllowance : null;
+              this.editedItem.employeeDetails.specialAllowance = data.employeeDetails.specialAllowance ? data.employeeDetails.specialAllowance : null;
+              this.editedItem.employeeDetails.direnessAllowance = data.employeeDetails.direnessAllowance ? data.employeeDetails.direnessAllowance : null;
+              this.editedItem.employeeDetails.hardnessAllowance = data.employeeDetails.hardnessAllowance ? data.employeeDetails.hardnessAllowance : null;
+              this.editedItem.employeeDetails.overtimeRate = data.employeeDetails.overtimeRate ? data.employeeDetails.overtimeRate : null;
+              this.editedItem.employeeDetails.holidayRate = data.employeeDetails.holidayRate ? data.employeeDetails.holidayRate : null;
 
-            this.editedItem.employeeEmergencyDetails.bloodGroup = data.employeeEmergencyDetails.bloodGroup ? data.employeeEmergencyDetails.bloodGroup : "";
-            this.editedItem.employeeEmergencyDetails.contactName = data.employeeEmergencyDetails.contactName ? data.employeeEmergencyDetails.contactName : "";
-            this.editedItem.employeeEmergencyDetails.contactNumber = data.employeeEmergencyDetails.contactNumber ? data.employeeEmergencyDetails.contactNumber : "";
-            this.editedItem.employeeEmergencyDetails.relation = data.employeeEmergencyDetails.relation ? data.employeeEmergencyDetails.relation : "";
-            this.editedItem.employeeEmergencyDetails.photo = data.employeeEmergencyDetails.photo ? data.employeeEmergencyDetails.photo : "";
-            this.editedItem.employeeEmergencyDetails.citizenship = data.employeeEmergencyDetails.citizenship ? data.employeeEmergencyDetails.citizenship : "";
+              this.editedItem.employeeEmergencyDetails.bloodGroup = data.employeeEmergencyDetails.bloodGroup ? data.employeeEmergencyDetails.bloodGroup : "";
+              this.editedItem.employeeEmergencyDetails.contactName = data.employeeEmergencyDetails.contactName ? data.employeeEmergencyDetails.contactName : "";
+              this.editedItem.employeeEmergencyDetails.contactNumber = data.employeeEmergencyDetails.contactNumber ? data.employeeEmergencyDetails.contactNumber : "";
+              this.editedItem.employeeEmergencyDetails.relation = data.employeeEmergencyDetails.relation ? data.employeeEmergencyDetails.relation : "";
+              this.editedItem.employeeEmergencyDetails.photo = data.employeeEmergencyDetails.photo ? data.employeeEmergencyDetails.photo : "";
+              this.editedItem.employeeEmergencyDetails.citizenship = data.employeeEmergencyDetails.citizenship ? data.employeeEmergencyDetails.citizenship : "";
 
-*/
-             if (!response.data.data.employeeEmergencyDetails) {
-               response.data.data.employeeEmergencyDetails = {
-                 bloodGroup: "",
-                 contactName: "",
-                 contactNumber: "",
-                 relation: "",
-                 photo: [],
-                 citizenship: []
-               }
-             }
-             if (!response.data.data.category) {
-               response.data.data.category = {
-                 activeStatus: "",
-                 name: ""
-               }
-             }
+  */
+            if (!response.data.data.employeeEmergencyDetails) {
+              response.data.data.employeeEmergencyDetails = {
+                bloodGroup: "",
+                contactName: "",
+                contactNumber: "",
+                relation: "",
+                photo: [],
+                citizenship: []
+              }
+            }
+            if (!response.data.data.category) {
+              response.data.data.category = {
+                activeStatus: "",
+                name: ""
+              }
+            }
 
-             if (!response.data.data.employeeDetails) {
-               response.data.data.employeeDetails = {
-                 activeStatus: "",
-                 accountNumber: "",
-                 ssfNo: "",
-                 panNumber: null,
-                 bank: {
-                   activeStatus: "",
-                   name: ""
-                 }
-               }
-             }
-             if (!response.data.data.employeeDetails.bank) {
-               response.data.data.employeeDetails.bank = {
-                 activeStatus: "",
-                 name: ""
-               }
-             }
-             if (!response.data.data.employeeEmergencyDetails.photo) {
-               response.data.data.employeeEmergencyDetails.photo = []
-             }
-             if (!response.data.data.employeeEmergencyDetails.citizenship) {
-               response.data.data.employeeEmergencyDetails.citizenship = []
-             }
-             if (!response.data.data.partTimeJoinDate) {
-               response.data.data.partTimeJoinDate = ""
-             }
-             if (!response.data.data.fullTimeJoinDate) {
-               response.data.data.fullTimeJoinDate = ""
-             }
-             if (!response.data.data.resignDate) {
-               response.data.data.resignDate = ""
-             }
-             if (!response.data.data.dateOfBirth) {
-               response.data.data.dateOfBirth = ""
-             }
+            if (!response.data.data.employeeDetails) {
+              response.data.data.employeeDetails = {
+                activeStatus: "",
+                accountNumber: "",
+                ssfNo: "",
+                panNumber: null,
+                bank: {
+                  activeStatus: "",
+                  name: ""
+                }
+              }
+            }
+            if (!response.data.data.employeeDetails.bank) {
+              response.data.data.employeeDetails.bank = {
+                activeStatus: "",
+                name: ""
+              }
+            }
+            if (!response.data.data.employeeEmergencyDetails.photo) {
+              response.data.data.employeeEmergencyDetails.photo = []
+            }
+            if (!response.data.data.employeeEmergencyDetails.citizenship) {
+              response.data.data.employeeEmergencyDetails.citizenship = []
+            }
+            if (!response.data.data.partTimeJoinDate) {
+              response.data.data.partTimeJoinDate = ""
+            }
+            if (!response.data.data.fullTimeJoinDate) {
+              response.data.data.fullTimeJoinDate = ""
+            }
+            if (!response.data.data.resignDate) {
+              response.data.data.resignDate = ""
+            }
+            if (!response.data.data.dateOfBirth) {
+              response.data.data.dateOfBirth = ""
+            }
             this.editedItem = response.data.data
             this.employeeDialog = true
             this.step = "1"

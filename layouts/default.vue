@@ -205,7 +205,7 @@
         </template>
         <span>Settings</span>
       </v-tooltip>
-      <!--      <v-tooltip bottom>
+<!--            <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   icon
@@ -226,7 +226,7 @@
       </v-container>
     </v-main>
     <!-- Right Navigation Drawer -->
-    <!--    <v-navigation-drawer
+<!--        <v-navigation-drawer
           v-model="rightDrawer"
           :right="right"
           :clipped="true"
@@ -234,7 +234,7 @@
           app
         >
           <v-list>
-    &lt;!&ndash;        <v-list-item>
+            <v-list-item>
               <v-list-item-action>
                 <v-icon>
                   {{ themeSwitch ? 'fas fa-moon' : 'fas fa-sun' }}
@@ -245,7 +245,7 @@
                 v-model="themeSwitch"
               ></v-switch>
             </v-list-item>
-            <v-divider></v-divider>&ndash;&gt;
+            <v-divider></v-divider>
             <v-list-item :to="'/settings'">
               <v-list-item-action>
                 <v-icon>
