@@ -8,14 +8,14 @@
             <v-autocomplete prepend-inner-icon="fa-solid fa-users" filled dense :items="allActiveEmployeeNepali"
                             v-model="selectedEmployee"
                             label="Employee (Nepali Date)"
-                            placeholder="Search by name or VS No."
+                            placeholder="Search by name or V.S. No."
                             return-object
                             :filter="filterEmployee"
                             @input="getEmployee"
-                            :item-text="item => 'VS No. ' + item.vsNo +' | '+ item.staffName+' | '+ '(Assigned:'+item.assignedHours+ ' hrs)'"
+                            :item-text="item => 'V.S. No. ' + item.vsNo +' | '+ item.staffName+' | '+ '(Assigned:'+item.assignedHours+ ' hrs)'"
             >
               <template v-slot:item="{item}">
-                VS No. {{ item.vsNo }} | {{ item.staffName }} | (Assigned: {{ item.assignedHours }} hrs)
+                V.S. No. {{ item.vsNo }} | {{ item.staffName }} | (Assigned: {{ item.assignedHours }} hrs)
               </template>
 
             </v-autocomplete>
@@ -24,14 +24,14 @@
             <v-autocomplete prepend-inner-icon="fa-solid fa-users" filled dense :items="allActiveEmployeeEnglish"
                             v-model="selectedEmployee"
                             label="Employee (English Date)"
-                            placeholder="Search by name or VS No."
+                            placeholder="Search by name or V.S. No."
                             return-object
                             @input="getEmployee"
                             :filter="filterEmployee"
-                            :item-text="item => 'VS No. ' + item.vsNo +' | '+ item.staffName+' | '+ '(Assigned:'+item.assignedHours+ ' hrs)'"
+                            :item-text="item => 'V.S. No. ' + item.vsNo +' | '+ item.staffName+' | '+ '(Assigned:'+item.assignedHours+ ' hrs)'"
             >
               <template v-slot:item="{item}">
-                VS No. {{ item.vsNo }} | {{ item.staffName }} | (Assigned: {{ item.assignedHours }} hrs)
+                V.S. No. {{ item.vsNo }} | {{ item.staffName }} | (Assigned: {{ item.assignedHours }} hrs)
               </template>
             </v-autocomplete>
           </v-col>
@@ -83,6 +83,55 @@
 
             </v-col>
           </v-row>
+          <v-row style="margin-top:-175px;" justify="end">
+            <v-col cols="auto">
+              <v-row no-gutters>
+                <v-col cols="auto">
+                  <h4>INDEX</h4>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="light-green" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Weekend</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="orange" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="pink" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Sick Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="red" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Absent</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
+                  <v-sheet color="yellow" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Holiday</v-col>
+              </v-row>
+            </v-col>
+          </v-row>
           <v-row>
             <v-spacer/>
             <v-col cols="auto">
@@ -121,6 +170,11 @@
                               }"
               :items="employeeData"
               :headers="getHeaders">
+              <template v-slot:item.actions="{ item }">
+                <v-btn icon color="error" @click.stop.prevent="deleteItem(item)">
+                  <v-icon>fas fa-trash-alt</v-icon>
+                </v-btn>
+              </template>
               <template v-for="(tempItem,j) in numberOfDaysInCurrentMonth"
                         v-slot:[`item.days[${j}].workedHours`]="{item,index}">
                 <v-menu close-on-content-click offset-y>
@@ -358,7 +412,6 @@ export default {
       dayList: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       headers: [],
       employeeData: [],
-      showMenu: false,
       newEmployeeRosters: [],
       selectedPayload: {},
       holidayModal: false,
@@ -368,6 +421,38 @@ export default {
   methods: {
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
     ...mapActions("leave", ["getEmployeeLeaveDetails"]),
+    deleteItem(item) {
+      const temp = this;
+      console.log(item)
+      this.$root.confirm('Confirm Delete', 'Are you sure you want to delete ' + item.client.siteName + '?')
+        .then((confirm) => {
+          this.makePostRequest({
+            route: "employeeRoster/delete",
+            data: {
+              employeeId: temp.selectedEmployee.id,
+              clientId: item.client.id,
+              isNepaliDate: temp.selectedEmployee.useNepaliCalendar,
+              month: temp.selectedEmployee.useNepaliCalendar ? temp.selectedNepaliMonth : temp.selectedEnglishMonth,
+              year: temp.selectedEmployee.useNepaliCalendar ? temp.selectedNepaliYear : temp.selectedEnglishYear,
+            }
+          }).then((response) => {
+            if (response.data.status === "OK") {
+              temp.getEmployee(temp.selectedEmployee);
+              this.$store.dispatch("toast/setSnackbar", {
+                text: "Reliever deleted successfully"
+              });
+            }else{
+              temp.$store.dispatch("toast/setSnackbar", {
+                icon: "fa-solid fa-circle-xmark",
+                color: "error",
+                title: "Error",
+                text: "Unable to delete reliever"
+              });
+            }
+          })
+        }).catch((error) => {
+      });
+    },
     getAllActiveEmployee() {
       let temp = this;
       this.$store.dispatch("api/makeGetRequest",
@@ -653,9 +738,6 @@ export default {
       }
     },
 
-    show() {
-      this.showMenu = true;
-    },
     newHourLog(event, rosterByEmployeeIndex, dayIndex, undoLeave) {
       const roster = this.employeeData[rosterByEmployeeIndex];
       const day = this.employeeData[rosterByEmployeeIndex].days[dayIndex];
@@ -958,9 +1040,9 @@ export default {
       if (temp.newEmployeeRosters.length > 0) {
         this.makePostRequest({
           route: "employeeRoster/bulkSave",
-          data: {
+          data: [
             ...temp.newEmployeeRosters
-          }
+          ]
         }).then((response) => {
           if (response.data.status === "OK") {
             temp.$store.dispatch("toast/setSnackbar", {
@@ -1303,7 +1385,7 @@ export default {
       headers.push({text: "Total Hours", value: "totalHours.totalBasicHours"});
       headers.push({text: "Holiday Hours", value: "totalHours.totalHolidayHours"});
       headers.push({text: "Overtime Hours", value: "totalHours.totalOvertimeHours"});
-      headers.push({text: "Actions", value: ""});
+      headers.push({text: "Actions", value: "actions"});
       return headers;
     },
     numberOfDaysInCurrentMonth() {

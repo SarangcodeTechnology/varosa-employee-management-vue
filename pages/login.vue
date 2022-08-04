@@ -94,7 +94,9 @@ export default {
           name: temp.email,
           password: temp.password,
         }
-      });
+      }).then(((response) =>{
+        temp.$router.push("/");
+      } )).catch((error)=>{});
     }
   },
 
