@@ -397,6 +397,9 @@ export default {
     themeSwitch: function (old, newVal) {
       this.$vuetify.theme.dark = old;
     },
+    userFunctionalities: function (old, newVal) {
+      this.tableItems();
+    }
   },
   computed: {
     ...mapGetters("auth", ["userFunctionalities"]),
