@@ -4,13 +4,10 @@ const state = () => ({});
 
 const mutations = {};
 
-const actions = {
-
-
-};
+const actions = {};
 
 const getters = {
-  getHoursPerDate:(state)=>({roster, date, useNepaliCalendar})=> {
+  getHoursPerDate: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.workedHours ? eachRoster.workedHours : 0;
@@ -18,15 +15,17 @@ const getters = {
     }
     return 0;
   },
-  isWeekend:(state)=>({useNepaliCalendar, selectedYear, selectedMonth, selectedDate,clientWeekendList}) =>{
-    const day = useNepaliCalendar ? new NepaliDate(selectedYear, selectedMonth-1, selectedDate).getDay() :
-      new Date(selectedYear, selectedMonth - 1, selectedDate).getDay();
-    if (selectedDate === 31) {
-    }
-    const weekendList = clientWeekendList ? clientWeekendList.split('') : [];
-    return weekendList.includes(day.toString());
+  isWeekend: (state) => ({useNepaliCalendar, selectedYear, selectedMonth, selectedDate, clientWeekendList}) => {
+      const day = useNepaliCalendar ? new NepaliDate(selectedYear, selectedMonth - 1, selectedDate).getDay() :
+        new Date(selectedYear, selectedMonth - 1, selectedDate).getDay();
+      // console.log(clientWeekendList);
+      const weekendList = !!clientWeekendList ? clientWeekendList.split('') : [];
+      if (weekendList.includes(day.toString())) {
+        return true;
+      }
+      return false;
   },
-  isHoliday:(state)=>({holidays, selectedMonth, useNepaliCalendar, date}) =>{
+  isHoliday: (state) => ({holidays, selectedMonth, useNepaliCalendar, date}) => {
     for (const holiday of holidays) {
       if (useNepaliCalendar) {
         if (holiday.nepaliMonth === selectedMonth && holiday.nepaliDay === date) {
@@ -40,7 +39,7 @@ const getters = {
     }
     return false;
   },
-  checkIsLeave:(state)=>({roster, date, useNepaliCalendar}) =>{
+  checkIsLeave: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.isLeave ? eachRoster.isLeave : false;
@@ -48,7 +47,7 @@ const getters = {
     }
     return false;
   },
-  checkIsSick:(state)=>({roster, date, useNepaliCalendar}) =>{
+  checkIsSick: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.isSick ? eachRoster.isSick : false;
@@ -56,7 +55,7 @@ const getters = {
     }
     return false;
   },
-  checkIsAbsent:(state)=>({roster, date, useNepaliCalendar}) =>{
+  checkIsAbsent: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.isAbsent ? eachRoster.isAbsent : false;
@@ -64,7 +63,7 @@ const getters = {
     }
     return false;
   },
-  checkIsOvertime:(state)=>({roster, date, useNepaliCalendar}) =>{
+  checkIsOvertime: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.isOvertime ? eachRoster.isOvertime : false;
@@ -72,7 +71,7 @@ const getters = {
     }
     return false;
   },
-  checkIsReliever:(state)=>({roster, date, useNepaliCalendar}) =>{
+  checkIsReliever: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.isReliever ? eachRoster.isReliever : false;
@@ -80,7 +79,7 @@ const getters = {
     }
     return false;
   },
-  getRelievedEmployeeId:(state)=>({roster, date, useNepaliCalendar}) =>{
+  getRelievedEmployeeId: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.relievedEmployeeId;
@@ -88,7 +87,7 @@ const getters = {
     }
     return null;
   },
-  getHolidayBasicHoursPerDate:(state)=>({roster, date, useNepaliCalendar}) =>{
+  getHolidayBasicHoursPerDate: (state) => ({roster, date, useNepaliCalendar}) => {
     for (const eachRoster of roster) {
       if (date === (useNepaliCalendar ? eachRoster.nepaliDay : eachRoster.englishDay)) {
         return eachRoster.holidayBasicHours ? eachRoster.holidayBasicHours : 0;
