@@ -9,7 +9,7 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <p>Welcome to login of Varosa Services HR Solution. Enter the necessary credentials to continue.</p>
+              <p>Welcome to login of Varosa Services HR Solution. Enter the necessary credentials to continue..</p>
               <v-divider></v-divider>
               <v-form>
                 <v-text-field v-model="email" :error-messages="usernameErrors"
