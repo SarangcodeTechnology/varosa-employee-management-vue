@@ -406,7 +406,6 @@ export default {
       selectedNepaliMonth: new NepaliDate().getMonth() + 1,
       selectedEnglishYear: new Date().getFullYear(),
       selectedEnglishMonth: new Date().getMonth() + 1,
-
       nepaliMonthList: ['Baisakh', 'Jestha', 'Asar', 'Shrawan', 'Bhadra', 'Asoj', 'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra'],
       englishMonthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       dayList: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
