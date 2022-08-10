@@ -714,10 +714,16 @@ export default {
       // Setup number of saturdays in current month
       let numberOfWeekends = 0;
       for (let i = 1; i <= numberOfDaysInCurrentMonth; i++) {
-        if (this.isWeekend(
-          useNepaliCalendar, selectedYear, selectedMonth, i, employee.nonWorkingDays)) {
+        const day = useNepaliCalendar ? new NepaliDate(selectedYear, selectedMonth - 1, i).getDay() :
+          new Date(selectedYear, selectedMonth - 1, i).getDay();
+        const weekendList = !!employee.nonWorkingDays ? employee.nonWorkingDays.split('') : [];
+        if (weekendList.includes(day.toString())) {
           numberOfWeekends++;
         }
+        // if (this.isWeekend(
+        //   useNepaliCalendar, selectedYear, selectedMonth, i, employee.nonWorkingDays)) {
+        //   numberOfWeekends++;
+        // }
       }
       return numberOfDaysInCurrentMonth - numberOfWeekends;
     },
@@ -1399,13 +1405,10 @@ export default {
       let temp = this;
       let numberOfWeekends = 0;
       for (let i = 1; i <= temp.numberOfDaysInCurrentMonth; i++) {
-        if (temp.isWeekend({
-          useNepaliCalendar: this.selectedEmployee.useNepaliCalendar,
-          selectedYear: this.selectedEmployee.useNepaliCalendar ? temp.selectedNepaliYear : temp.selectedEnglishYear,
-          selectedMonth: this.selectedEmployee.useNepaliCalendar ? temp.selectedNepaliMonth : temp.selectedEnglishMonth,
-          selectedDate: i,
-          clientWeekendList: this.selectedEmployee.nonWorkingDays
-        })) {
+        const day = this.selectedClient.useNepaliCalendar ? new NepaliDate(this.selectedYear, this.selectedMonth - 1, i).getDay() :
+          new Date(this.selectedYear, this.selectedMonth - 1, i).getDay();
+        const weekendList = !!this.selectedClient.nonWorkingDays ? this.selectedClient.nonWorkingDays.split('') : [];
+        if (weekendList.includes(day.toString())) {
           numberOfWeekends++;
         }
       }

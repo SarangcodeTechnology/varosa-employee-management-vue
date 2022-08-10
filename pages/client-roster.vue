@@ -1447,7 +1447,6 @@ export default {
       for (let i = 1; i <= temp.numberOfDaysInCurrentMonth; i++) {
         const day = this.selectedClient.useNepaliCalendar ? new NepaliDate(this.selectedYear, this.selectedMonth - 1, i).getDay() :
           new Date(this.selectedYear, this.selectedMonth - 1, i).getDay();
-        // console.log(clientWeekendList);
         const weekendList = !!this.selectedClient.nonWorkingDays ? this.selectedClient.nonWorkingDays.split('') : [];
         if (weekendList.includes(day.toString())) {
           numberOfWeekends++;
