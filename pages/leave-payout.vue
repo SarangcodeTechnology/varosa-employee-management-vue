@@ -14,7 +14,7 @@
           
               <v-btn-toggle>
                 <v-btn
-                  @click="selectLeavePayoutYearBack()"
+                  @click="selectLeavePayoutYearBack"
                   fab
                   small
                   icon>
@@ -36,7 +36,7 @@
           <v-spacer/>
           <!-- excel print buttons -->
           <v-col cols="auto">
-            <v-btn color="green" dark>
+            <v-btn color="green" @click="toExcel" dark>
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
@@ -84,6 +84,7 @@
 </template>
 
 <script>
+import helpers from '../helpers';
 
 export default {
   name: "Leave Payout Sheet",
@@ -115,6 +116,32 @@ export default {
   },
  
   methods: {
+    responseGetter() {
+      return this.$store.dispatch("api/makeGetRequest",
+        {
+          route: `leavePayout/sheet`,
+          params: {
+              nepaliYear: this.nepaliDate
+          }
+        }
+      )
+    },
+    async toExcel() {
+      try {
+        await helpers.jsonToExcel({
+          fileName: this.nepaliDate + " - Leave Payout Sheet",
+          sheetName:
+            "Leave Sheet: ",
+          responseGetter: this.responseGetter,
+          listAt: "data.data",
+        });
+      } catch (e) {
+        console.log(e);
+        this.$store.dispatch("toast/setSnackbar", {
+          text: "Excel Error: " + e,
+        });
+      }
+    },
 
     //  handle api requests
      getActiveData() {

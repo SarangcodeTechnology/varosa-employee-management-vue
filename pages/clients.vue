@@ -21,7 +21,7 @@
           </v-col>
           <v-spacer/>
           <v-col cols="auto">
-            <v-btn color="green" dark>
+            <v-btn color="green" @click="toExcel" dark>
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
@@ -578,6 +578,7 @@
 import {mapActions, mapGetters} from 'vuex'
 import {validationMixin} from 'vuelidate';
 import {required} from "vuelidate/lib/validators";
+import helpers from '../helpers';
 
 export default {
   mixins: [validationMixin],
@@ -720,6 +721,27 @@ export default {
     }
   },
   methods: {
+    responseGetter() {
+      const temp = this ;
+      return this.$store.dispatch("api/makeGetRequest", {
+        route: "client/getAll" +  (temp.activeStatus ? "Active" : "Inactive"),
+      });
+    },
+    async toExcel() {
+      try {
+        await helpers.jsonToExcel({
+          fileName: "Clients",
+          sheetName: "Clients: " + (this.activeStatus ? "Active" : "Inactive"),
+          responseGetter: this.responseGetter,
+          listAt: "data.data",
+        });
+      } catch (e) {
+        console.log(e);
+        this.$store.dispatch("toast/setSnackbar", {
+          text: "Excel Error: " + e,
+        });
+      }
+    },
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
     getErrors(name, model) {
       const errors = [];

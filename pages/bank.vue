@@ -21,7 +21,7 @@
           </v-col>
           <v-spacer/>
           <v-col cols="auto">
-            <v-btn color="green" dark>
+            <v-btn color="green" @click="toExcel" dark>
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
@@ -161,6 +161,7 @@
 
 <script>
 
+import helpers from '../helpers';
 
 export default {
   name: "BankManagement",
@@ -203,6 +204,30 @@ export default {
       }
   },
   methods: {
+    responseGetter() {
+      return this.$store.dispatch("api/makeGetRequest", {
+        route:
+          `bank/getAll/` +
+          (this.selectedFilterOption == "A" ? "active" : "inactive"),
+      });
+    },
+    async toExcel() {
+      try {
+        await helpers.jsonToExcel({
+          fileName: "Bank List",
+          sheetName:
+            "Banks: " +
+            (this.selectedFilterOption == "A" ? "Active" : "Inactive"),
+          responseGetter: this.responseGetter,
+          listAt: "data.data",
+        });
+      } catch (e) {
+        console.log(e);
+        this.$store.dispatch("toast/setSnackbar", {
+          text: "Excel Error: " + e,
+        });
+      }
+    },
      addNewDialogue(dialogueStatus, bankName, bankId){
       if(dialogueStatus == 'Add'){
         this.dialogueState.type = dialogueStatus;

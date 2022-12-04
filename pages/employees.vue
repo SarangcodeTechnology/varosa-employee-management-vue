@@ -1828,7 +1828,7 @@ export default {
     },
   },
   methods: {
-    employeeListGetter() {
+    responseGetter() {
       let temp = this;
       return this.$store.dispatch("api/makeGetRequest", {
         route: "employee/getByStatusMini",
@@ -1842,7 +1842,7 @@ export default {
         await helpers.jsonToExcel({
           fileName: "Employees",
           sheetName: "Employees: " + this.selectedFilterOption,
-          responseGetter: this.employeeListGetter,
+          responseGetter: this.responseGetter,
           listAt: "data.data",
         });
       } catch (e) {
