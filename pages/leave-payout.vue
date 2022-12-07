@@ -87,7 +87,7 @@
 import helpers from '../helpers';
 
 export default {
-  name: "Leave Payout Sheet",
+  name: "Leave Payout",
   data() {
     return {
       nepaliDate : 2078,

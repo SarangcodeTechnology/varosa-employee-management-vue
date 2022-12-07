@@ -265,6 +265,7 @@ export default {
         }
       ).then(response => {
         if (response.data.status === "OK") {
+          console.log(response.data.data) ;
           this.activeData = response.data.data;
           this.isloading = false;
         }
