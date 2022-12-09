@@ -1,9 +1,18 @@
+<style>
+tr > td,
+th {
+  height: 90px !important;
+}
+</style>
 <template>
   <v-container fluid>
     <h2 style="font-weight: 700" class="mb-6">Employee Management</h2>
     <v-card>
       <v-container fluid>
-        <v-row justify="center">
+        <v-row
+          v-if="!this.$store.state.printControl.isPrinting"
+          justify="center"
+        >
           <v-col cols="4">
             <v-text-field
               v-model="search"
@@ -49,253 +58,508 @@
           </v-col>
         </v-row>
 
-        <v-data-table
-          calculate-widths
-          @click:row="(item) => editEmployee(item, false)"
-          :headers="headers"
-          :items="tableItems"
-          :search="search"
-          :items-per-page="25"
-          :loading="isLoading"
-          fixed-header
-          loading-text="Fetching data. Please wait..."
-          :footer-props="{
-            showFirstLastPage: true,
-            firstIcon: 'fas fa-angle-double-left',
-            lastIcon: 'fas fa-angle-double-right',
-            nextIcon: 'fas fa-angle-right',
-            prevIcon: 'fas fa-angle-left',
-            itemsPerPageOptions: [25, 50, 100, -1],
-          }"
-        >
-          <template v-slot:item.actions="{ item }">
-            <div class="d-flex justify-content-center align-items-center">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="editEmployee(item, false)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fas fa-eye</v-icon>
-                  </v-btn>
-                </template>
-                <span>View Employee</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="editEmployee(item, true)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fas fa-pencil</v-icon>
-                  </v-btn>
-                </template>
-                <span>Edit Employee</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="navigateToMonthlyRoster(item)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fa-solid fa-calendar-days</v-icon>
-                  </v-btn>
-                </template>
-                <span>Navigate to Monthly Roster</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="navigateToSalaryDetails(item)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fa-solid fa-money-bill</v-icon>
-                  </v-btn>
-                </template>
-                <span>Navigate to Salary Details</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="viewMappedClients(item, true)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fa-solid fa-network-wired</v-icon>
-                  </v-btn>
-                </template>
-                <span>View Mapped Clients</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="viewLeaveDetails(item, true)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fa-solid fa-user-clock</v-icon>
-                  </v-btn>
-                </template>
-                <span>View Leave Details</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="updateEmployeeStatus(item)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fa-solid fa-user-edit</v-icon>
-                  </v-btn>
-                </template>
-                <span>Update Employee Status</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                    @click.stop.prevent="cloneEmployee(item, true)"
-                  >
-                    <v-icon>fas fa-clone</v-icon>
-                  </v-btn>
-                </template>
-                <span>Clone Employee</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    color="error"
-                    fab
-                    icon
-                    x-small
-                    @click.stop.prevent="deactivateEmployee(item)"
-                  >
-                    <v-icon>fas fa-trash-alt</v-icon>
-                  </v-btn>
-                </template>
-                <span>Deactivate Employee</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    @click.stop.prevent="reactivateEmployee(item)"
-                    v-bind="attrs"
-                    v-on="on"
-                    fab
-                    icon
-                    x-small
-                  >
-                    <v-icon>fas fa-user-lock</v-icon>
-                  </v-btn>
-                </template>
-                <span>Reactivate Employee</span>
-              </v-tooltip>
-              <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
-                <template v-slot:activator="{ attrs, on }">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    color="error"
-                    fab
-                    icon
-                    x-small
-                    @click.stop.prevent="deleteItem(item)"
-                  >
-                    <v-icon>fas fa-trash-alt</v-icon>
-                  </v-btn>
-                </template>
-                <span>Delete Employee</span>
-              </v-tooltip>
-            </div>
-          </template>
-          <template v-slot:item.activeStatus="{ item }">
-            <v-chip
-              :color="filterMenuItems[0].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'A'"
-              dark
-              dense
+        <!--Kam garni dt-->
+        <div style="display: flex; flex-wrap: nowrap">
+          <div style="max-width: 250px; width: fit-content">
+            <v-data-table
+              calculate-widths
+              @click:row="(item) => editEmployee(item, false)"
+              :headers="headers1"
+              :items="tableItems"
+              :search="search"
+              :items-per-page="25"
+              :loading="isLoading"
+              fixed-header
+              loading-text="Fetching data. Please wait..."
+              :footer-props="{
+                showFirstLastPage: true,
+                firstIcon: 'fas fa-angle-double-left',
+                lastIcon: 'fas fa-angle-double-right',
+                nextIcon: 'fas fa-angle-right',
+                prevIcon: 'fas fa-angle-left',
+                itemsPerPageOptions: [25, 50, 100, -1],
+              }"
             >
-              Active
-            </v-chip>
-            <v-chip
-              :color="filterMenuItems[2].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'H'"
-              dark
-              dense
+              <template v-slot:item.actions="{ item }">
+                <div class="d-flex justify-content-center align-items-center">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="editEmployee(item, false)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-eye</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="editEmployee(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-pencil</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Edit Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="navigateToMonthlyRoster(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-calendar-days</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Navigate to Monthly Roster</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="navigateToSalaryDetails(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-money-bill</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Navigate to Salary Details</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="viewMappedClients(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-network-wired</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Mapped Clients</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="viewLeaveDetails(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-user-clock</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Leave Details</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="updateEmployeeStatus(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-user-edit</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Update Employee Status</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="cloneEmployee(item, true)"
+                      >
+                        <v-icon>fas fa-clone</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Clone Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        color="error"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="deactivateEmployee(item)"
+                      >
+                        <v-icon>fas fa-trash-alt</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Deactivate Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="reactivateEmployee(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-user-lock</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Reactivate Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        color="error"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="deleteItem(item)"
+                      >
+                        <v-icon>fas fa-trash-alt</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Delete Employee</span>
+                  </v-tooltip>
+                </div>
+              </template>
+              <template v-slot:item.activeStatus="{ item }">
+                <v-chip
+                  :color="filterMenuItems[0].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'A'"
+                  dark
+                  dense
+                >
+                  Active
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[2].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'H'"
+                  dark
+                  dense
+                >
+                  Hold
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[3].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'M'"
+                  dark
+                  dense
+                >
+                  Missing
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[4].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'P'"
+                  dark
+                  dense
+                >
+                  Resign Pending
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[5].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'R'"
+                  dark
+                  dense
+                >
+                  Resigned
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[1].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'I'"
+                  dark
+                  dense
+                >
+                  Inactive
+                </v-chip>
+              </template>
+            </v-data-table>
+          </div>
+
+          <div style="overflow-x: scroll">
+            <v-data-table
+              calculate-widths
+              @click:row="(item) => editEmployee(item, false)"
+              :headers="headers2"
+              :items="tableItems"
+              :search="search"
+              :items-per-page="25"
+              :loading="isLoading"
+              fixed-header
+              loading-text="Fetching data. Please wait..."
+              :footer-props="{
+                // showFirstLastPage: true,
+                // firstIcon: 'fas fa-angle-double-left',
+                // lastIcon: 'fas fa-angle-double-right',
+                // nextIcon: 'fas fa-angle-right',
+                // prevIcon: 'fas fa-angle-left',
+                // itemsPerPageOptions: [25, 50, 100, -1],
+              }"
             >
-              Hold
-            </v-chip>
-            <v-chip
-              :color="filterMenuItems[3].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'M'"
-              dark
-              dense
-            >
-              Missing
-            </v-chip>
-            <v-chip
-              :color="filterMenuItems[4].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'P'"
-              dark
-              dense
-            >
-              Resign Pending
-            </v-chip>
-            <v-chip
-              :color="filterMenuItems[5].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'R'"
-              dark
-              dense
-            >
-              Resigned
-            </v-chip>
-            <v-chip
-              :color="filterMenuItems[1].color"
-              class="ma-2"
-              v-if="selectedFilterOption === 'I'"
-              dark
-              dense
-            >
-              Inactive
-            </v-chip>
-          </template>
-        </v-data-table>
+              <template v-slot:item.actions="{ item }">
+                <div class="d-flex justify-content-center align-items-center">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="editEmployee(item, false)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-eye</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="editEmployee(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-pencil</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Edit Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="navigateToMonthlyRoster(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-calendar-days</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Navigate to Monthly Roster</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="navigateToSalaryDetails(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-money-bill</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Navigate to Salary Details</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="viewMappedClients(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-network-wired</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Mapped Clients</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="viewLeaveDetails(item, true)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-user-clock</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>View Leave Details</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="updateEmployeeStatus(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fa-solid fa-user-edit</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Update Employee Status</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="cloneEmployee(item, true)"
+                      >
+                        <v-icon>fas fa-clone</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Clone Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption !== 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        color="error"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="deactivateEmployee(item)"
+                      >
+                        <v-icon>fas fa-trash-alt</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Deactivate Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        @click.stop.prevent="reactivateEmployee(item)"
+                        v-bind="attrs"
+                        v-on="on"
+                        fab
+                        icon
+                        x-small
+                      >
+                        <v-icon>fas fa-user-lock</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Reactivate Employee</span>
+                  </v-tooltip>
+                  <v-tooltip v-if="selectedFilterOption === 'I'" bottom>
+                    <template v-slot:activator="{ attrs, on }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        color="error"
+                        fab
+                        icon
+                        x-small
+                        @click.stop.prevent="deleteItem(item)"
+                      >
+                        <v-icon>fas fa-trash-alt</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Delete Employee</span>
+                  </v-tooltip>
+                </div>
+              </template>
+              <template v-slot:item.activeStatus="{ item }">
+                <v-chip
+                  :color="filterMenuItems[0].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'A'"
+                  dark
+                  dense
+                >
+                  Active
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[2].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'H'"
+                  dark
+                  dense
+                >
+                  Hold
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[3].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'M'"
+                  dark
+                  dense
+                >
+                  Missing
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[4].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'P'"
+                  dark
+                  dense
+                >
+                  Resign Pending
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[5].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'R'"
+                  dark
+                  dense
+                >
+                  Resigned
+                </v-chip>
+                <v-chip
+                  :color="filterMenuItems[1].color"
+                  class="ma-2"
+                  v-if="selectedFilterOption === 'I'"
+                  dark
+                  dense
+                >
+                  Inactive
+                </v-chip>
+              </template>
+            </v-data-table>
+          </div>
+        </div>
       </v-container>
     </v-card>
     <v-dialog
@@ -887,6 +1151,7 @@
               </v-stepper-content>
               <v-stepper-content step="3">
                 <v-container fluid>
+                  <!-- <template>{{ editedItem.employeeEmergencyDetails }}</template> -->
                   <v-row dense>
                     <v-col cols="6">
                       <v-autocomplete
@@ -936,30 +1201,52 @@
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6">
-                      <v-file-input
-                        v-model="editedItem.employeeEmergencyDetails.photo"
-                        :disabled="!editingEmployee && !creatingEmployee"
-                        label="Photo"
-                        placeholder="Select your photo..."
-                        prepend-inner-icon="fa-solid fa-image"
-                        filled
-                        dense
-                      >
-                      </v-file-input>
+                      <div style="width: 100%">
+                        <div style="width: 100%">
+                          <v-file-input
+                            :disabled="!editingEmployee && !creatingEmployee"
+                            label="Photo"
+                            @change="onPhotoChange"
+                            placeholder="Select new photo..."
+                            prepend-inner-icon="fa-solid fa-image"
+                            filled
+                            dense
+                          >
+                          </v-file-input>
+                        </div>
+                        <div style="width: 100%">
+                          <v-img
+                            :src="editedItem.employeeEmergencyDetails.photo"
+                            contain
+                            max-width="250px"
+                          ></v-img>
+                        </div>
+                      </div>
                     </v-col>
                     <v-col cols="6">
-                      <v-file-input
-                        v-model="
-                          editedItem.employeeEmergencyDetails.citizenship
-                        "
-                        :disabled="!editingEmployee && !creatingEmployee"
-                        label="Citizenship"
-                        placeholder="Select your citizenship..."
-                        prepend-inner-icon="fa-solid fa-image"
-                        filled
-                        dense
-                      >
-                      </v-file-input>
+                      <div style="width: 100%">
+                        <div style="width: 100%">
+                          <v-file-input
+                            :disabled="!editingEmployee && !creatingEmployee"
+                            label="Citizenship"
+                            @change="onCitizenshipChange"
+                            placeholder="Select new Citizenship..."
+                            prepend-inner-icon="fa-solid fa-image"
+                            filled
+                            dense
+                          >
+                          </v-file-input>
+                        </div>
+                        <div style="width: 100%">
+                          <v-img
+                            :src="
+                              editedItem.employeeEmergencyDetails.citizenship
+                            "
+                            contain
+                            max-width="250px"
+                          ></v-img>
+                        </div>
+                      </div>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -1646,6 +1933,7 @@ export default {
           citizenship: [],
         },
       },
+      freezingColumns: 3,
       headers: [
         { text: "S.N.", value: "sno", width: "2%" },
         { text: "V.S. No.", value: "vsNo" },
@@ -1743,6 +2031,12 @@ export default {
       "sickLeavesPreviousFiscalYear",
       "paidLeavesPreviousFiscalYear",
     ]),
+    headers1() {
+      return this.headers.slice(0, this.freezingColumns);
+    },
+    headers2() {
+      return this.headers.slice(this.freezingColumns);
+    },
     ...mapGetters("auth", ["accessToken"]),
     annualLeaveDetails() {
       return this.validateLeave(
@@ -1828,6 +2122,37 @@ export default {
     },
   },
   methods: {
+ 
+    async onPhotoChange(files) {
+      console.log(this.editedItem.employeeEmergencyDetails.photo);
+      if (files) {
+        try {
+          let base64 = await helpers.readFile(files);
+          console.log(base64);
+          this.editedItem.employeeEmergencyDetails.photo = base64;
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        this.editedItem.employeeEmergencyDetails.photo = null;
+      }
+      console.log(this.editedItem.employeeEmergencyDetails.photo);
+    },
+    async onCitizenshipChange(files) {
+      console.log(this.editedItem.employeeEmergencyDetails.citizenship);
+      if (files) {
+        try {
+          let base64 = await helpers.readFile(files);
+          console.log(base64);
+          this.editedItem.employeeEmergencyDetails.citizenship = base64;
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        this.editedItem.employeeEmergencyDetails.citizenship = null;
+      }
+      console.log(this.editedItem.employeeEmergencyDetails.citizenship);
+    },
     responseGetter() {
       let temp = this;
       return this.$store.dispatch("api/makeGetRequest", {
@@ -1920,6 +2245,7 @@ export default {
     },
     editEmployee(item, editingEmployee) {
       let temp = this;
+      console.log("Editing: ", editingEmployee);
       this.editedTableItem = Object.assign({}, item);
       this.$store
         .dispatch("api/makeGetRequest", {
@@ -1928,10 +2254,76 @@ export default {
             id: item.id,
           },
         })
-        .then((response) => {
+        .then(async (response) => {
           if (response.data.status === "OK") {
-            if (!response.data.data.employeeEmergencyDetails) {
-              response.data.data.employeeEmergencyDetails = {
+            // console.log(response.data.data.employeeEmergencyDetails);
+            // if (!response.data.data.employeeEmergencyDetails) {
+            //   response.data.data.employeeEmergencyDetails = {
+            //     bloodGroup: "",
+            //     contactName: "",
+            //     contactNumber: "",
+            //     relation: "",
+            //     photo: [],
+            //     citizenship: [],
+            //   };
+            // }
+            // if (!response.data.data.category) {
+            //   response.data.data.category = {
+            //     activeStatus: "",
+            //     name: "",
+            //   };
+            // }
+
+            // if (!response.data.data.employeeDetails) {
+            //   response.data.data.employeeDetails = {
+            //     activeStatus: "",
+            //     accountNumber: "",
+            //     ssfNo: "",
+            //     panNumber: null,
+            //     bank: {
+            //       activeStatus: "",
+            //       name: "",
+            //     },
+            //   };
+            // }
+            // if (!response.data.data.employeeDetails.bank) {
+            //   response.data.data.employeeDetails.bank = {
+            //     activeStatus: "",
+            //     name: "",
+            //   };
+            // }
+
+            // if (!response.data.data.employeeEmergencyDetails.photo) {
+            //   response.data.data.employeeEmergencyDetails.photo = [];
+            // }else{
+            //   response.data.data.employeeEmergencyDetails.photo = process.env.BACKEND_API_URL + "image/get?fileName=" + response.data.data.employeeEmergencyDetails.photo ;
+            // }
+            // if (!response.data.data.employeeEmergencyDetails.citizenship) {
+            //   response.data.data.employeeEmergencyDetails.citizenship = [];
+            // }
+            // if (!response.data.data.partTimeJoinDate) {
+            //   response.data.data.partTimeJoinDate = "";
+            // }
+            // if (!response.data.data.fullTimeJoinDate) {
+            //   response.data.data.fullTimeJoinDate = "";
+            // }
+            // if (!response.data.data.resignDate) {
+            //   response.data.data.resignDate = "";
+            // }
+            // if (!response.data.data.dateOfBirth) {
+            //   response.data.data.dateOfBirth = "";
+            // }
+            this.editedItem = response.data.data;
+            console.log(
+              "Raw: ",
+              this.editedItem.employeeEmergencyDetails.photo
+            );
+            console.log(
+              "Raw: ",
+              this.editedItem.employeeEmergencyDetails.citizenship
+            );
+            if (!this.editedItem.employeeEmergencyDetails) {
+              this.editedItem.employeeEmergencyDetails = {
                 bloodGroup: "",
                 contactName: "",
                 contactNumber: "",
@@ -1940,15 +2332,15 @@ export default {
                 citizenship: [],
               };
             }
-            if (!response.data.data.category) {
-              response.data.data.category = {
+            if (!this.editedItem.category) {
+              this.editedItem.category = {
                 activeStatus: "",
                 name: "",
               };
             }
 
-            if (!response.data.data.employeeDetails) {
-              response.data.data.employeeDetails = {
+            if (!this.editedItem.employeeDetails) {
+              this.editedItem.employeeDetails = {
                 activeStatus: "",
                 accountNumber: "",
                 ssfNo: "",
@@ -1959,31 +2351,58 @@ export default {
                 },
               };
             }
-            if (!response.data.data.employeeDetails.bank) {
-              response.data.data.employeeDetails.bank = {
+            if (!this.editedItem.employeeDetails.bank) {
+              this.editedItem.employeeDetails.bank = {
                 activeStatus: "",
                 name: "",
               };
             }
-            if (!response.data.data.employeeEmergencyDetails.photo) {
-              response.data.data.employeeEmergencyDetails.photo = [];
+
+            if (!this.editedItem.employeeEmergencyDetails.photo) {
+              this.editedItem.employeeEmergencyDetails.photo = [];
+            } else {
+              const url =
+                process.env.BACKEND_API_URL +
+                "image/get?fileName=" +
+                this.editedItem.employeeEmergencyDetails.photo;
+
+              console.log("getting base64 from url for photo");
+              const base64 = await helpers.urlToBase64(url);
+              console.log("base64: ", base64);
+              this.editedItem.employeeEmergencyDetails.photo = base64;
             }
-            if (!response.data.data.employeeEmergencyDetails.citizenship) {
-              response.data.data.employeeEmergencyDetails.citizenship = [];
+            if (!this.editedItem.employeeEmergencyDetails.citizenship) {
+              this.editedItem.employeeEmergencyDetails.citizenship = [];
+            } else {
+              const url =
+                process.env.BACKEND_API_URL +
+                "image/get?fileName=" +
+                this.editedItem.employeeEmergencyDetails.citizenship;
+              console.log("getting base64 from url for citizenship");
+              const base64 = await helpers.urlToBase64(url);
+              console.log("base64: ", base64);
+              this.editedItem.employeeEmergencyDetails.citizenship = base64;
             }
-            if (!response.data.data.partTimeJoinDate) {
-              response.data.data.partTimeJoinDate = "";
+            if (!this.editedItem.partTimeJoinDate) {
+              this.editedItem.partTimeJoinDate = "";
             }
-            if (!response.data.data.fullTimeJoinDate) {
-              response.data.data.fullTimeJoinDate = "";
+            if (!this.editedItem.fullTimeJoinDate) {
+              this.editedItem.fullTimeJoinDate = "";
             }
-            if (!response.data.data.resignDate) {
-              response.data.data.resignDate = "";
+            if (!this.editedItem.resignDate) {
+              this.editedItem.resignDate = "";
             }
-            if (!response.data.data.dateOfBirth) {
-              response.data.data.dateOfBirth = "";
+            if (!this.editedItem.dateOfBirth) {
+              this.editedItem.dateOfBirth = "";
             }
-            this.editedItem = response.data.data;
+            console.log(
+              "Managed: ",
+              this.editedItem.employeeEmergencyDetails.photo
+            );
+            console.log(
+              "Managed: ",
+              this.editedItem.employeeEmergencyDetails.citizenship
+            );
             this.employeeDialog = true;
             this.step = "1";
             if (editingEmployee) {
@@ -2064,10 +2483,13 @@ export default {
             this.creatingEmployee = false;
           }
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.log(error);
+        });
     },
     updateEmployee() {
       const temp = this;
+      console.log(temp.editedItem);
       this.makePostRequest({
         route: "employee/update",
         data: {
@@ -2084,7 +2506,9 @@ export default {
             this.editingEmployee = false;
           }
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.log(error);
+        });
     },
     reactivateEmployee(item) {
       const temp = this;
@@ -2302,6 +2726,7 @@ export default {
               response.data.data.dateOfBirth = ""
             }*/
             this.employeeStatusItem = response.data.data;
+            console.log(this.employeeStatusItem);
             this.updateEmployeeStatusDialog = true;
           }
         })

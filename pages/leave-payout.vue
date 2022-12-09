@@ -3,7 +3,7 @@
     <h2 style="font-weight: 700;" class="mb-6">Leave Pay Out Sheet</h2>
     <v-card>
       <v-container fluid>
-        <v-row justify="center">
+        <v-row v-if="!this.$store.state.printControl.isPrinting" justify="center">
           <v-col cols="4">
             <v-text-field v-model="search" dense append-icon="fas fa-search" outlined
                           label="Search..."></v-text-field>

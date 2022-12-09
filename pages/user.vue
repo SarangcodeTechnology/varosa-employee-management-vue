@@ -1,9 +1,499 @@
+<script>
+import { mapActions, mapGetters } from "vuex";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
+import helpers from "../helpers";
+
+export default {
+  mixins: [validationMixin],
+  name: "UserManagement",
+  validations: {
+    clientMappings: {
+      newMapping: {
+        client: { required },
+      },
+    },
+  },
+  data() {
+    return {
+      activeStatus: true,
+      activeData: [],
+      inactiveData: [],
+      search: "",
+      isLoading: false,
+      editedItem: {
+        activeStatus: "",
+        email: "",
+        name: "",
+        password: "",
+        phone: "",
+        restrictAccessToClients: false,
+      },
+      editedFunctionalities: [],
+      defaultItem: {
+        activeStatus: "",
+        email: "",
+        name: "",
+        password: "",
+        phone: "",
+        restrictAccessToClients: false,
+        setPasswordByAdmin: false,
+      },
+      headers: [
+        { text: "S.N.", value: "sno", width: "2%" },
+        { text: "Name", value: "name" },
+        { text: "E-mail", value: "email" },
+        { text: "Contact No.", value: "phone" },
+        { text: "Status", value: "activeStatus", width: "5%" },
+        { text: "Actions", value: "actions", width: "15%" },
+      ],
+      userDialog: false,
+      mappedClientsDialog: false,
+      editingUser: false,
+      creatingUser: false,
+      showPassword: true,
+      editingFunctionalities: false,
+      functionalitiesDialog: false,
+      filterMenuItems: [
+        { name: "Active", value: "A", color: "green" },
+        { name: "Inactive", value: "I", color: "error" },
+      ],
+      selectedFilterOption: "A",
+      viewingMappedClients: false,
+      clientMappings: {
+        addedMappings: [],
+        removedMappings: [],
+        newMapping: {
+          client: {},
+          employee: {},
+        },
+      },
+      clientMappingsLoading: false,
+      currentClientMappings: [],
+      originalClientMappings: [],
+      allActiveClients: [],
+      clientMappingHeaders: [
+        { text: "Client Name", value: "client.siteName" },
+        { text: "Actions", value: "actions", width: "15%" },
+      ],
+    };
+  },
+  computed: {
+    ...mapGetters("auth", ["accessToken", "allUserFunctionalities"]),
+    allActiveClientsFiltered() {
+      const temp = this;
+      return this.allActiveClients.filter((item) => {
+        return !temp.currentClientMappings.find((x) => x.client.id === item.id);
+      });
+    },
+    activeDataWithSn() {
+      return this.activeData.map((d, index) => ({ ...d, sno: index + 1 }));
+    },
+    inactiveDataWithSn() {
+      return this.inactiveData.map((d, index) => ({ ...d, sno: index + 1 }));
+    },
+    tableItems() {
+      switch (this.selectedFilterOption) {
+        case "A":
+          return this.activeDataWithSn;
+        case "I":
+          return this.inactiveDataWithSn;
+        default:
+          return this.activeDataWithSn;
+      }
+    },
+  },
+  methods: {
+  rowItemClass() {
+      return this.$store.state.printControl.isPrinting ? "trForPrint" : "";
+    },
+    print() {
+      helpers.print(this.$store);
+    },
+    responseGetter() {
+      const temp = this;
+      return this.$store.dispatch("api/makeGetRequest", {
+        route: "user/getAll" + (temp.activeStatus ? "/active" : "/inactive"),
+      });
+    },
+    async toExcel() {
+      try {
+        await helpers.jsonToExcel({
+          fileName: "Users",
+          sheetName: "Users: " + (this.activeStatus ? "Active" : "Inactive"),
+          responseGetter: this.responseGetter,
+          listAt: "data.data",
+        });
+      } catch (e) {
+        console.log(e);
+        this.$store.dispatch("toast/setSnackbar", {
+          text: "Excel Error: " + e,
+        });
+      }
+    },
+
+    ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
+    addClientMapping() {
+      let data = {
+        client: this.clientMappings.newMapping.client,
+        user: this.editedItem,
+      };
+      this.currentClientMappings.push(data);
+      this.clientMappings.addedMappings.push(data);
+      this.clientMappings.newMapping.client = {};
+      this.clientMappings.newMapping.employee = {};
+    },
+    getErrors(name, model) {
+      const errors = [];
+      if (!model.$dirty) return errors;
+      switch (name) {
+        case "client":
+          !model.required && errors.push("Client must be selected");
+          break;
+        default:
+          break;
+      }
+      return errors;
+    },
+    getActiveData() {
+      let temp = this;
+      this.isLoading = true;
+
+      this.$store
+        .dispatch("api/makeGetRequest", {
+          route: "user/getAll/active",
+        })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.activeData = response.data.data;
+          }
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+        });
+    },
+    getInactiveData() {
+      this.isLoading = true;
+      this.$store
+        .dispatch("api/makeGetRequest", {
+          route: "user/getAll/inactive",
+        })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.inactiveData = response.data.data;
+          }
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+        });
+    },
+    deleteItem(item) {
+      const temp = this;
+      this.editedItem = Object.assign({}, item);
+      this.$root
+        .confirm(
+          "Confirm Delete",
+          "Are you sure you want to delete " + item.name + "?"
+        )
+        .then((confirm) => {
+          this.makePostRequest({
+            route: "user/delete",
+            data: {
+              ...temp.editedItem,
+            },
+          }).then((response) => {
+            if (response.data.status === "OK") {
+              this.$store.dispatch("toast/setSnackbar", {
+                text: "User deleted successfully",
+              });
+              this.getActiveData();
+              this.getInactiveData();
+            }
+          });
+        })
+        .catch((error) => {});
+    },
+    editUser(item, editingUser) {
+      this.editedItem = Object.assign({}, item);
+      this.userDialog = true;
+      if (editingUser) {
+        this.editingUser = editingUser;
+      }
+    },
+    newUser(item, creatingUser) {
+      this.editedItem = Object.assign({}, item);
+      this.userDialog = true;
+      if (creatingUser) {
+        this.creatingUser = creatingUser;
+      }
+    },
+    createUser() {
+      const temp = this;
+      this.makePostRequest({
+        route: "user/registerNew",
+        data: {
+          activeStatus: temp.editedItem.setPasswordByAdmin ? "A" : "U",
+          email: temp.editedItem.email,
+          name: temp.editedItem.name,
+          password: temp.editedItem.setPasswordByAdmin
+            ? temp.editedItem.password
+            : "temp_password",
+          phone: temp.editedItem.phone,
+          restrictAccessToClients: temp.editedItem.restrictAccessToClients,
+        },
+      })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.$store.dispatch("toast/setSnackbar", {
+              text: "User created successfully",
+            });
+            this.getActiveData();
+            this.userDialog = false;
+            this.editingUser = false;
+          }
+        })
+        .catch((error) => {});
+    },
+    updateUser() {
+      const temp = this;
+      this.makePostRequest({
+        route: "user/update",
+        data: {
+          ...temp.editedItem,
+        },
+      })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.$store.dispatch("toast/setSnackbar", {
+              text: "User details updated successfully",
+            });
+            this.getActiveData();
+            this.userDialog = false;
+            this.editingUser = false;
+          }
+        })
+        .catch((error) => {});
+    },
+    getFunctionalitiesByUser(item, editingFunctionalities) {
+      const temp = this;
+      this.editedItem = Object.assign({}, item);
+      this.functionalitiesDialog = true;
+      if (editingFunctionalities) {
+        this.editingFunctionalities = editingFunctionalities;
+      }
+      this.makeGetRequest({
+        route: "functionality/mappings/getByUser",
+        params: {
+          userId: temp.editedItem.id,
+        },
+      }).then((response) => {
+        if (response.data.status === "OK") {
+          this.editedFunctionalities = response.data.data;
+        }
+      });
+    },
+    updateFunctionalities() {
+      const temp = this;
+      this.makePostRequest({
+        route: "functionality/mappings/update",
+        data: {
+          userId: temp.editedItem.id,
+          functionalities: temp.editedFunctionalities,
+        },
+      })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.$store.dispatch("toast/setSnackbar", {
+              text: "Functionalities updated successfully",
+            });
+            this.$store.dispatch("auth/getCurrentUserFunctionalitiesMappings");
+            this.functionalitiesDialog = false;
+            this.editingFunctionalities = false;
+          }
+        })
+        .catch((error) => {});
+    },
+    resetPassword(item) {
+      const temp = this;
+      this.editedItem = Object.assign({}, item);
+      this.$root
+        .confirm(
+          `Are you sure you want to reset ${item.name}'s password?`,
+          `An email will be sent to ${item.email} with reset password.`
+        )
+        .then((confirm) => {
+          this.makeGetRequest({
+            route: "user/resetPassword",
+            params: {
+              userId: item.id,
+            },
+          }).then((response) => {
+            if (response.data.status === "OK") {
+              this.$store.dispatch("toast/setSnackbar", {
+                text: "Password reset email sent successfully",
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    reactivateUser(item) {
+      const temp = this;
+      this.editedItem = Object.assign({}, item);
+      this.$root
+        .confirm(
+          `Confirm`,
+          `Are you sure you want to reactivate ${item.name}'s account?`
+        )
+        .then((confirm) => {
+          this.makePostRequest({
+            route: "user/reactivate",
+            data: {
+              ...temp.editedItem,
+            },
+          }).then((response) => {
+            if (response.data.status === "OK") {
+              this.$store.dispatch("toast/setSnackbar", {
+                text: "Account reactivated successfully.",
+              });
+              this.getActiveData();
+              this.getInactiveData();
+            }
+          });
+        })
+        .catch((error) => {});
+    },
+    viewMappedClients(item, viewingMappedClients) {
+      if (item.restrictAccessToClients) {
+        this.editedItem = Object.assign({}, item);
+        this.clientMappings = {
+          addedMappings: [],
+          removedMappings: [],
+          newMapping: {
+            client: {},
+            employee: {},
+          },
+        };
+        this.mappedClientsDialog = true;
+        if (viewingMappedClients) {
+          this.viewingMappedClients = viewingMappedClients;
+        }
+        this.clientMappingsLoading = true;
+        this.$store
+          .dispatch("api/makeGetRequest", {
+            route: "client/userClientMappings",
+            params: {
+              userId: item.id,
+            },
+          })
+          .then((response) => {
+            if (response.data.status === "OK") {
+              this.currentClientMappings = response.data.data;
+              this.originalClientMappings = JSON.parse(
+                JSON.stringify(response.data.data)
+              );
+            }
+            this.clientMappingsLoading = false;
+          })
+          .catch((error) => {
+            this.clientMappingsLoading = false;
+            this.mappedClientsDialog = false;
+            this.viewingMappedClients = false;
+          });
+      } else {
+        this.$store.dispatch("toast/setSnackbar", {
+          text: `Not allowed! ${item.name} hass access to all clients.`,
+          color: "warning",
+          icon: "fa-solid fa-triangle-exclamation",
+        });
+      }
+    },
+    getData(selectedFilterOption) {
+      switch (selectedFilterOption) {
+        case "A":
+          this.activeStatus = true;
+          this.getActiveData();
+          break;
+        case "I":
+          this.activeStatus = false;
+          this.getInactiveData();
+          break;
+        default:
+          this.activeStatus = true;
+          return this.getActiveData();
+      }
+    },
+    deleteClientMapping(data) {
+      for (var i = 0; i < this.originalClientMappings.length; i++) {
+        if (this.originalClientMappings[i].client.id === data.client.id) {
+          this.clientMappings.removedMappings.push(data);
+        }
+      }
+      for (var k = 0; k < this.currentClientMappings.length; k++) {
+        if (this.currentClientMappings[k].client.id === data.client.id) {
+          this.currentClientMappings.splice(k, 1);
+        }
+      }
+      for (var j = 0; j < this.clientMappings.addedMappings.length; j++) {
+        if (this.clientMappings.addedMappings[j].client.id === data.client.id) {
+          this.clientMappings.addedMappings.splice(j, 1);
+        }
+      }
+    },
+    updateClientMappings() {
+      const temp = this;
+      this.makePostRequest({
+        route: "client/userMappings/update",
+        data: {
+          addedMappings: temp.clientMappings.addedMappings,
+          removedMappings: temp.clientMappings.removedMappings,
+        },
+      })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.$store.dispatch("toast/setSnackbar", {
+              text: "Client mappings updated successfully",
+            });
+            this.getData();
+            this.mappedClientsDialog = false;
+            this.viewingMappedClients = false;
+          }
+        })
+        .catch((error) => {});
+    },
+    getAllActiveClients() {
+      let temp = this;
+      this.$store
+        .dispatch("api/makeGetRequest", {
+          route: "client/getAllActive",
+        })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.allActiveClients = response.data.data;
+          }
+        })
+        .catch((error) => {});
+    },
+  },
+  mounted() {
+    this.getActiveData();
+    this.getAllActiveClients();
+  },
+};
+</script>
 <template>
   <v-container fluid>
     <h2 style="font-weight: 700" class="mb-6">User Management</h2>
     <v-card>
       <v-container fluid>
-        <v-row justify="center">
+        <v-row
+          v-if="!this.$store.state.printControl.isPrinting"
+          justify="center"
+        >
           <v-col cols="4">
             <v-text-field
               v-model="search"
@@ -38,7 +528,7 @@
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
-            <v-btn dark>
+            <v-btn dark @click="print">
               <v-icon left>fas fa-print</v-icon>
               Print
             </v-btn>
@@ -50,7 +540,6 @@
         </v-row>
 
         <v-data-table
-          calculate-widths
           @click:row="(item) => editUser(item, false)"
           :headers="headers"
           :items="tableItems"
@@ -58,7 +547,9 @@
           :items-per-page="25"
           :loading="isLoading"
           fixed-header
+          :item-class="rowItemClass"
           loading-text="Fetching data. Please wait..."
+          :class="{dataTableForPrint: this.$store.state.printControl.isPrinting}"
           :footer-props="{
             showFirstLastPage: true,
             firstIcon: 'fas fa-angle-double-left',
@@ -68,7 +559,10 @@
             itemsPerPageOptions: [25, 50, 100, -1],
           }"
         >
-          <template v-slot:item.actions="{ item }">
+          <template
+            v-if="!this.$store.state.printControl.isPrinting"
+            v-slot:item.actions="{ item }"
+          >
             <div class="d-flex justify-content-center align-items-center">
               <v-tooltip bottom>
                 <template v-slot:activator="{ attrs, on }">
@@ -469,6 +963,7 @@
               <h4>Selected Clients</h4>
               <v-data-table
                 calculate-widths
+                width="100%"
                 :headers="clientMappingHeaders"
                 :items="currentClientMappings"
                 :items-per-page="10"
@@ -615,487 +1110,5 @@
     </v-dialog>
   </v-container>
 </template>
-
-<script>
-import { mapActions, mapGetters } from "vuex";
-import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
-import helpers from "../helpers";
-
-export default {
-  mixins: [validationMixin],
-  name: "UserManagement",
-  validations: {
-    clientMappings: {
-      newMapping: {
-        client: { required },
-      },
-    },
-  },
-  data() {
-    return {
-      activeStatus: true,
-      activeData: [],
-      inactiveData: [],
-      search: "",
-      isLoading: false,
-      editedItem: {
-        activeStatus: "",
-        email: "",
-        name: "",
-        password: "",
-        phone: "",
-        restrictAccessToClients: false,
-      },
-      editedFunctionalities: [],
-      defaultItem: {
-        activeStatus: "",
-        email: "",
-        name: "",
-        password: "",
-        phone: "",
-        restrictAccessToClients: false,
-        setPasswordByAdmin: false,
-      },
-      headers: [
-        { text: "S.N.", value: "sno", width: "2%" },
-        { text: "Name", value: "name" },
-        { text: "E-mail", value: "email" },
-        { text: "Contact No.", value: "phone" },
-        { text: "Status", value: "activeStatus", width: "5%" },
-        { text: "Actions", value: "actions", width: "15%" },
-      ],
-      userDialog: false,
-      mappedClientsDialog: false,
-      editingUser: false,
-      creatingUser: false,
-      showPassword: true,
-      editingFunctionalities: false,
-      functionalitiesDialog: false,
-      filterMenuItems: [
-        { name: "Active", value: "A", color: "green" },
-        { name: "Inactive", value: "I", color: "error" },
-      ],
-      selectedFilterOption: "A",
-      viewingMappedClients: false,
-      clientMappings: {
-        addedMappings: [],
-        removedMappings: [],
-        newMapping: {
-          client: {},
-          employee: {},
-        },
-      },
-      clientMappingsLoading: false,
-      currentClientMappings: [],
-      originalClientMappings: [],
-      allActiveClients: [],
-      clientMappingHeaders: [
-        { text: "Client Name", value: "client.siteName" },
-        { text: "Actions", value: "actions", width: "15%" },
-      ],
-    };
-  },
-  computed: {
-    ...mapGetters("auth", ["accessToken", "allUserFunctionalities"]),
-    allActiveClientsFiltered() {
-      const temp = this;
-      return this.allActiveClients.filter((item) => {
-        return !temp.currentClientMappings.find((x) => x.client.id === item.id);
-      });
-    },
-    activeDataWithSn() {
-      return this.activeData.map((d, index) => ({ ...d, sno: index + 1 }));
-    },
-    inactiveDataWithSn() {
-      return this.inactiveData.map((d, index) => ({ ...d, sno: index + 1 }));
-    },
-    tableItems() {
-      switch (this.selectedFilterOption) {
-        case "A":
-          return this.activeDataWithSn;
-        case "I":
-          return this.inactiveDataWithSn;
-        default:
-          return this.activeDataWithSn;
-      }
-    },
-  },
-  methods: {
-    responseGetter() {
-      const temp = this ;
-      return this.$store.dispatch("api/makeGetRequest", {
-        route: "user/getAll" +  (temp.activeStatus ? "/active" : "/inactive"),
-      });
-    },
-    async toExcel() {
-      try {
-        await helpers.jsonToExcel({
-          fileName: "Users",
-          sheetName: "Users: " + (this.activeStatus ? "Active" : "Inactive"),
-          responseGetter: this.responseGetter,
-          listAt: "data.data",
-        });
-      } catch (e) {
-        console.log(e);
-        this.$store.dispatch("toast/setSnackbar", {
-          text: "Excel Error: " + e,
-        });
-      }
-    },
-
-    ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
-    addClientMapping() {
-      let data = {
-        client: this.clientMappings.newMapping.client,
-        user: this.editedItem,
-      };
-      this.currentClientMappings.push(data);
-      this.clientMappings.addedMappings.push(data);
-      this.clientMappings.newMapping.client = {};
-      this.clientMappings.newMapping.employee = {};
-    },
-    getErrors(name, model) {
-      const errors = [];
-      if (!model.$dirty) return errors;
-      switch (name) {
-        case "client":
-          !model.required && errors.push("Client must be selected");
-          break;
-        default:
-          break;
-      }
-      return errors;
-    },
-    getActiveData() {
-      let temp = this;
-      this.isLoading = true;
-
-      this.$store
-        .dispatch("api/makeGetRequest", {
-          route: "user/getAll/active",
-        })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.activeData = response.data.data;
-          }
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          this.isLoading = false;
-        });
-    },
-    getInactiveData() {
-      this.isLoading = true;
-      this.$store
-        .dispatch("api/makeGetRequest", {
-          route: "user/getAll/inactive",
-        })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.inactiveData = response.data.data;
-          }
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          this.isLoading = false;
-        });
-    },
-    deleteItem(item) {
-      const temp = this;
-      this.editedItem = Object.assign({}, item);
-      this.$root
-        .confirm(
-          "Confirm Delete",
-          "Are you sure you want to delete " + item.name + "?"
-        )
-        .then((confirm) => {
-          this.makePostRequest({
-            route: "user/delete",
-            data: {
-              ...temp.editedItem,
-            },
-          }).then((response) => {
-            if (response.data.status === "OK") {
-              this.$store.dispatch("toast/setSnackbar", {
-                text: "User deleted successfully",
-              });
-              this.getActiveData();
-              this.getInactiveData();
-            }
-          });
-        })
-        .catch((error) => {});
-    },
-    editUser(item, editingUser) {
-      this.editedItem = Object.assign({}, item);
-      this.userDialog = true;
-      if (editingUser) {
-        this.editingUser = editingUser;
-      }
-    },
-    newUser(item, creatingUser) {
-      this.editedItem = Object.assign({}, item);
-      this.userDialog = true;
-      if (creatingUser) {
-        this.creatingUser = creatingUser;
-      }
-    },
-    createUser() {
-      const temp = this;
-      this.makePostRequest({
-        route: "user/registerNew",
-        data: {
-          activeStatus: temp.editedItem.setPasswordByAdmin ? "A" : "U",
-          email: temp.editedItem.email,
-          name: temp.editedItem.name,
-          password: temp.editedItem.setPasswordByAdmin
-            ? temp.editedItem.password
-            : "temp_password",
-          phone: temp.editedItem.phone,
-          restrictAccessToClients: temp.editedItem.restrictAccessToClients,
-        },
-      })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.$store.dispatch("toast/setSnackbar", {
-              text: "User created successfully",
-            });
-            this.getActiveData();
-            this.userDialog = false;
-            this.editingUser = false;
-          }
-        })
-        .catch((error) => {});
-    },
-    updateUser() {
-      const temp = this;
-      this.makePostRequest({
-        route: "user/update",
-        data: {
-          ...temp.editedItem,
-        },
-      })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.$store.dispatch("toast/setSnackbar", {
-              text: "User details updated successfully",
-            });
-            this.getActiveData();
-            this.userDialog = false;
-            this.editingUser = false;
-          }
-        })
-        .catch((error) => {});
-    },
-    getFunctionalitiesByUser(item, editingFunctionalities) {
-      const temp = this;
-      this.editedItem = Object.assign({}, item);
-      this.functionalitiesDialog = true;
-      if (editingFunctionalities) {
-        this.editingFunctionalities = editingFunctionalities;
-      }
-      this.makeGetRequest({
-        route: "functionality/mappings/getByUser",
-        params: {
-          userId: temp.editedItem.id,
-        },
-      }).then((response) => {
-        if (response.data.status === "OK") {
-          this.editedFunctionalities = response.data.data;
-        }
-      });
-    },
-    updateFunctionalities() {
-      const temp = this;
-      this.makePostRequest({
-        route: "functionality/mappings/update",
-        data: {
-          userId: temp.editedItem.id,
-          functionalities: temp.editedFunctionalities,
-        },
-      })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.$store.dispatch("toast/setSnackbar", {
-              text: "Functionalities updated successfully",
-            });
-            this.$store.dispatch("auth/getCurrentUserFunctionalitiesMappings");
-            this.functionalitiesDialog = false;
-            this.editingFunctionalities = false;
-          }
-        })
-        .catch((error) => {});
-    },
-    resetPassword(item) {
-      const temp = this;
-      this.editedItem = Object.assign({}, item);
-      this.$root
-        .confirm(
-          `Are you sure you want to reset ${item.name}'s password?`,
-          `An email will be sent to ${item.email} with reset password.`
-        )
-        .then((confirm) => {
-          this.makeGetRequest({
-            route: "user/resetPassword",
-            params: {
-              userId: item.id,
-            },
-          }).then((response) => {
-            if (response.data.status === "OK") {
-              this.$store.dispatch("toast/setSnackbar", {
-                text: "Password reset email sent successfully",
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    reactivateUser(item) {
-      const temp = this;
-      this.editedItem = Object.assign({}, item);
-      this.$root
-        .confirm(
-          `Confirm`,
-          `Are you sure you want to reactivate ${item.name}'s account?`
-        )
-        .then((confirm) => {
-          this.makePostRequest({
-            route: "user/reactivate",
-            data: {
-              ...temp.editedItem,
-            },
-          }).then((response) => {
-            if (response.data.status === "OK") {
-              this.$store.dispatch("toast/setSnackbar", {
-                text: "Account reactivated successfully.",
-              });
-              this.getActiveData();
-              this.getInactiveData();
-            }
-          });
-        })
-        .catch((error) => {});
-    },
-    viewMappedClients(item, viewingMappedClients) {
-      if (item.restrictAccessToClients) {
-        this.editedItem = Object.assign({}, item);
-        this.clientMappings = {
-          addedMappings: [],
-          removedMappings: [],
-          newMapping: {
-            client: {},
-            employee: {},
-          },
-        };
-        this.mappedClientsDialog = true;
-        if (viewingMappedClients) {
-          this.viewingMappedClients = viewingMappedClients;
-        }
-        this.clientMappingsLoading = true;
-        this.$store
-          .dispatch("api/makeGetRequest", {
-            route: "client/userClientMappings",
-            params: {
-              userId: item.id,
-            },
-          })
-          .then((response) => {
-            if (response.data.status === "OK") {
-              this.currentClientMappings = response.data.data;
-              this.originalClientMappings = JSON.parse(
-                JSON.stringify(response.data.data)
-              );
-            }
-            this.clientMappingsLoading = false;
-          })
-          .catch((error) => {
-            this.clientMappingsLoading = false;
-            this.mappedClientsDialog = false;
-            this.viewingMappedClients = false;
-          });
-      } else {
-        this.$store.dispatch("toast/setSnackbar", {
-          text: `Not allowed! ${item.name} hass access to all clients.`,
-          color: "warning",
-          icon: "fa-solid fa-triangle-exclamation",
-        });
-      }
-    },
-    getData(selectedFilterOption) {
-      switch (selectedFilterOption) {
-        case "A":
-          this.activeStatus = true;
-          this.getActiveData();
-          break;
-        case "I":
-          this.activeStatus = false;
-          this.getInactiveData();
-          break;
-        default:
-          this.activeStatus = true;
-          return this.getActiveData();
-      }
-    },
-    deleteClientMapping(data) {
-      for (var i = 0; i < this.originalClientMappings.length; i++) {
-        if (this.originalClientMappings[i].client.id === data.client.id) {
-          this.clientMappings.removedMappings.push(data);
-        }
-      }
-      for (var k = 0; k < this.currentClientMappings.length; k++) {
-        if (this.currentClientMappings[k].client.id === data.client.id) {
-          this.currentClientMappings.splice(k, 1);
-        }
-      }
-      for (var j = 0; j < this.clientMappings.addedMappings.length; j++) {
-        if (this.clientMappings.addedMappings[j].client.id === data.client.id) {
-          this.clientMappings.addedMappings.splice(j, 1);
-        }
-      }
-    },
-    updateClientMappings() {
-      const temp = this;
-      this.makePostRequest({
-        route: "client/userMappings/update",
-        data: {
-          addedMappings: temp.clientMappings.addedMappings,
-          removedMappings: temp.clientMappings.removedMappings,
-        },
-      })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.$store.dispatch("toast/setSnackbar", {
-              text: "Client mappings updated successfully",
-            });
-            this.getData();
-            this.mappedClientsDialog = false;
-            this.viewingMappedClients = false;
-          }
-        })
-        .catch((error) => {});
-    },
-    getAllActiveClients() {
-      let temp = this;
-      this.$store
-        .dispatch("api/makeGetRequest", {
-          route: "client/getAllActive",
-        })
-        .then((response) => {
-          if (response.data.status === "OK") {
-            this.allActiveClients = response.data.data;
-          }
-        })
-        .catch((error) => {});
-    },
-  },
-  mounted() {
-    this.getActiveData();
-    this.getAllActiveClients();
-  },
-};
-</script>
 
 <style scoped></style>

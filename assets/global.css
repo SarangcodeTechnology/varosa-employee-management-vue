@@ -1,0 +1,25 @@
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
+
+.dataTableForPrint{
+    color: red;
+}
+.dataTableForPrint tr>td{
+    width: 10px !important;
+    overflow: hidden;
+}
+.dataTableForPrint tr{
+    height: auto !important;
+}
+
+/* .trForPrint{
+    height: auto !important;
+}
+.trForPrint td{
+    width: 10px !important;
+} */
