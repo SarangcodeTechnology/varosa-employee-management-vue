@@ -16,10 +16,24 @@
 .dataTableForPrint tr{
     height: auto !important;
 }
-
-/* .trForPrint{
-    height: auto !important;
+.trFreezed::-webkit-scrollbar{
+    display: none;
 }
-.trForPrint td{
-    width: 10px !important;
-} */
+.freezedCell::-webkit-scrollbar{
+    display: none;
+}
+.freezedCell{
+    height: 100px !important;
+    max-height: 100px !important;
+    overflow-y: scroll;
+    display: flex;
+    align-items: center;
+    padding: 10px auto;
+}
+.freezedHeading{
+    height: 100px !important;
+    max-height: 100px !important;
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+}

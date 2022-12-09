@@ -1,9 +1,3 @@
-<style>
-tr > td,
-th {
-  height: 90px !important;
-}
-</style>
 <template>
   <v-container fluid>
     <h2 style="font-weight: 700" class="mb-6">Employee Management</h2>
@@ -62,11 +56,17 @@ th {
         <div style="display: flex; flex-wrap: nowrap">
           <div style="max-width: 250px; width: fit-content">
             <v-data-table
+              ref="dt1"
+              :page="pageToShow"
+              disable-sort
+              hide-default-footer
+              class="freezedDT"
               calculate-widths
               @click:row="(item) => editEmployee(item, false)"
               :headers="headers1"
               :items="tableItems"
               :search="search"
+              :item-class="trClass"
               :items-per-page="25"
               :loading="isLoading"
               fixed-header
@@ -312,14 +312,19 @@ th {
 
           <div style="overflow-x: scroll">
             <v-data-table
+              class="freezedDT"
+              ref="dt2"
               calculate-widths
+              disable-sort
               @click:row="(item) => editEmployee(item, false)"
               :headers="headers2"
+              :item-class="trClass"
               :items="tableItems"
               :search="search"
               :items-per-page="25"
               :loading="isLoading"
               fixed-header
+              @pagination="onPaginationChange"
               loading-text="Fetching data. Please wait..."
               :footer-props="{
                 // showFirstLastPage: true,
@@ -2021,6 +2026,7 @@ export default {
       employeeStatusItem: {
         activeStatus: "A",
       },
+      pageToShow: 1,
     };
   },
   computed: {
@@ -2122,7 +2128,34 @@ export default {
     },
   },
   methods: {
- 
+    trClass() {
+      return "trFreezed";
+    },
+
+    onPaginationChange(pagintaion){
+      this.pageToShow = pagintaion.page;
+    },
+
+    manageCellHeights() {
+      const dts = Object.values(this.$refs).map((e) => e.$el);
+      dts.forEach((dt) => {
+        const cells = dt.querySelectorAll("td, th");
+        cells.forEach((cell) => {
+          if (cell.tagName === "TH") {
+            if (!cell.firstChild.classList.contains("freezedHeading")) {
+              cell.firstChild.classList.add("freezedHeading");
+              console.log("Added class to heading");
+            }
+          } else {
+            if (cell.innerHTML[0] !== "<") {
+              cell.innerHTML = `<div class='freezedCell'">${cell.innerHTML}</div>`;
+              console.log("Wrapped cell");
+            }
+          }
+        });
+      });
+    },
+
     async onPhotoChange(files) {
       console.log(this.editedItem.employeeEmergencyDetails.photo);
       if (files) {
@@ -2245,7 +2278,6 @@ export default {
     },
     editEmployee(item, editingEmployee) {
       let temp = this;
-      console.log("Editing: ", editingEmployee);
       this.editedTableItem = Object.assign({}, item);
       this.$store
         .dispatch("api/makeGetRequest", {
@@ -2256,72 +2288,7 @@ export default {
         })
         .then(async (response) => {
           if (response.data.status === "OK") {
-            // console.log(response.data.data.employeeEmergencyDetails);
-            // if (!response.data.data.employeeEmergencyDetails) {
-            //   response.data.data.employeeEmergencyDetails = {
-            //     bloodGroup: "",
-            //     contactName: "",
-            //     contactNumber: "",
-            //     relation: "",
-            //     photo: [],
-            //     citizenship: [],
-            //   };
-            // }
-            // if (!response.data.data.category) {
-            //   response.data.data.category = {
-            //     activeStatus: "",
-            //     name: "",
-            //   };
-            // }
-
-            // if (!response.data.data.employeeDetails) {
-            //   response.data.data.employeeDetails = {
-            //     activeStatus: "",
-            //     accountNumber: "",
-            //     ssfNo: "",
-            //     panNumber: null,
-            //     bank: {
-            //       activeStatus: "",
-            //       name: "",
-            //     },
-            //   };
-            // }
-            // if (!response.data.data.employeeDetails.bank) {
-            //   response.data.data.employeeDetails.bank = {
-            //     activeStatus: "",
-            //     name: "",
-            //   };
-            // }
-
-            // if (!response.data.data.employeeEmergencyDetails.photo) {
-            //   response.data.data.employeeEmergencyDetails.photo = [];
-            // }else{
-            //   response.data.data.employeeEmergencyDetails.photo = process.env.BACKEND_API_URL + "image/get?fileName=" + response.data.data.employeeEmergencyDetails.photo ;
-            // }
-            // if (!response.data.data.employeeEmergencyDetails.citizenship) {
-            //   response.data.data.employeeEmergencyDetails.citizenship = [];
-            // }
-            // if (!response.data.data.partTimeJoinDate) {
-            //   response.data.data.partTimeJoinDate = "";
-            // }
-            // if (!response.data.data.fullTimeJoinDate) {
-            //   response.data.data.fullTimeJoinDate = "";
-            // }
-            // if (!response.data.data.resignDate) {
-            //   response.data.data.resignDate = "";
-            // }
-            // if (!response.data.data.dateOfBirth) {
-            //   response.data.data.dateOfBirth = "";
-            // }
             this.editedItem = response.data.data;
-            console.log(
-              "Raw: ",
-              this.editedItem.employeeEmergencyDetails.photo
-            );
-            console.log(
-              "Raw: ",
-              this.editedItem.employeeEmergencyDetails.citizenship
-            );
             if (!this.editedItem.employeeEmergencyDetails) {
               this.editedItem.employeeEmergencyDetails = {
                 bloodGroup: "",
@@ -2357,32 +2324,37 @@ export default {
                 name: "",
               };
             }
+            this.isLoading = true;
+            await Promise.all([
+              new Promise(async function (resolve, reject) {
+                if (!temp.editedItem.employeeEmergencyDetails.photo) {
+                  temp.editedItem.employeeEmergencyDetails.photo = [];
+                } else {
+                  const url =
+                    process.env.BACKEND_API_URL +
+                    "image/get?fileName=" +
+                    temp.editedItem.employeeEmergencyDetails.photo;
+                  const base64 = await helpers.urlToBase64(url);
+                  temp.editedItem.employeeEmergencyDetails.photo = base64;
+                }
+                resolve();
+              }),
+              new Promise(async function (resolve, reject) {
+                if (!temp.editedItem.employeeEmergencyDetails.citizenship) {
+                  temp.editedItem.employeeEmergencyDetails.citizenship = [];
+                } else {
+                  const url =
+                    process.env.BACKEND_API_URL +
+                    "image/get?fileName=" +
+                    temp.editedItem.employeeEmergencyDetails.citizenship;
+                  const base64 = await helpers.urlToBase64(url);
+                  temp.editedItem.employeeEmergencyDetails.citizenship = base64;
+                }
+                resolve();
+              }),
+            ]);
+            this.isLoading = false;
 
-            if (!this.editedItem.employeeEmergencyDetails.photo) {
-              this.editedItem.employeeEmergencyDetails.photo = [];
-            } else {
-              const url =
-                process.env.BACKEND_API_URL +
-                "image/get?fileName=" +
-                this.editedItem.employeeEmergencyDetails.photo;
-
-              console.log("getting base64 from url for photo");
-              const base64 = await helpers.urlToBase64(url);
-              console.log("base64: ", base64);
-              this.editedItem.employeeEmergencyDetails.photo = base64;
-            }
-            if (!this.editedItem.employeeEmergencyDetails.citizenship) {
-              this.editedItem.employeeEmergencyDetails.citizenship = [];
-            } else {
-              const url =
-                process.env.BACKEND_API_URL +
-                "image/get?fileName=" +
-                this.editedItem.employeeEmergencyDetails.citizenship;
-              console.log("getting base64 from url for citizenship");
-              const base64 = await helpers.urlToBase64(url);
-              console.log("base64: ", base64);
-              this.editedItem.employeeEmergencyDetails.citizenship = base64;
-            }
             if (!this.editedItem.partTimeJoinDate) {
               this.editedItem.partTimeJoinDate = "";
             }
@@ -2395,14 +2367,14 @@ export default {
             if (!this.editedItem.dateOfBirth) {
               this.editedItem.dateOfBirth = "";
             }
-            console.log(
-              "Managed: ",
-              this.editedItem.employeeEmergencyDetails.photo
-            );
-            console.log(
-              "Managed: ",
-              this.editedItem.employeeEmergencyDetails.citizenship
-            );
+            // console.log(
+            //   "Managed: ",
+            //   this.editedItem.employeeEmergencyDetails.photo
+            // );
+            // console.log(
+            //   "Managed: ",
+            //   this.editedItem.employeeEmergencyDetails.citizenship
+            // );
             this.employeeDialog = true;
             this.step = "1";
             if (editingEmployee) {
@@ -2580,9 +2552,6 @@ export default {
     getData() {
       let temp = this;
       this.isLoading = true;
-
-      // this.makeGetRequest
-
       this.$store
         .dispatch("api/makeGetRequest", {
           route: "employee/getByStatusMini",
@@ -2592,7 +2561,6 @@ export default {
         })
         .then((response) => {
           if (response.data.status === "OK") {
-            console.log(response.data.data);
             switch (this.selectedFilterOption) {
               case "A":
                 this.activeData = response.data.data;
@@ -3081,6 +3049,10 @@ export default {
     this.getAllActiveClients();
     this.getAllActiveBanks();
     this.$v.$touch();
+  },
+
+  updated() {
+    this.manageCellHeights();
   },
 };
 </script>
