@@ -9,6 +9,7 @@ const helpers = {
   }) {
     try {
       const response = await responseGetter();
+      console.log(response)
       const items = eval(`response.${listAt}`);
       if (!Array.isArray(items)) {
         throw new Error(

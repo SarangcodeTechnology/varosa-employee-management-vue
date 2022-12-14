@@ -675,8 +675,9 @@ export default {
       return numberOfWeekends;
     },
     getAggregateDetailsFromAPI() {
+      let temp = this ;
       this.makePostRequest({
-        route: "employeeRoster/employee/aggregate/employeeRoster/employee/aggregate",
+        route: "employeeRoster/employee/aggregate",
         data: {
           year: this.calendarData.selectedYear,
           month: this.calendarData.selectedMonth,
@@ -684,23 +685,26 @@ export default {
           isNepaliDate: this.calendarData.useNepaliCalendar
         }
       }).then((response) => {
+        console.log("here") ;
         if (response.data.status === "OK") {
-          this.employeeRosterAggregate = response.data.data.aggregate;
 
-          const salaryDetailsId = this.salaryDetails?.id;
+          temp.employeeRosterAggregate = response.data.data.aggregate;
+          
+          temp.salaryDetails = temp.getSalaryDetailsObject(temp.selectedEmployee,
+            response.data.data.aggregate, temp.allActiveHoliday, temp.calendarData);
+            
+          const salaryDetailsId = temp.salaryDetails?.id;
 
-          this.salaryDetails = this.getSalaryDetailsObject(this.selectedEmployee,
-            response.data.data.aggregate, this.allActiveHoliday, this.calendarData);
           if (salaryDetailsId != null) {
-            this.salaryDetails.id = salaryDetailsId;
+            temp.salaryDetails.id = salaryDetailsId;
           }
-          this.$store.dispatch("toast/setSnackbar", {
+          temp.$store.dispatch("toast/setSnackbar", {
             title: "Success",
             text: `Salary calculated`
           });
-          this.innerLoading = false;
+          temp.innerLoading = false;
         } else {
-          this.$store.dispatch("toast/setSnackbar", {
+          temp.$store.dispatch("toast/setSnackbar", {
             icon: "fa-solid fa-circle-xmark",
             color: "error",
             title: "Load Failed",
@@ -708,7 +712,7 @@ export default {
           });
         }
       }).catch((error) => {
-        this.$store.dispatch("toast/setSnackbar", {
+        temp.$store.dispatch("toast/setSnackbar", {
           icon: "fa-solid fa-circle-xmark",
           color: "error",
           title: "Load Failed",
@@ -879,7 +883,12 @@ export default {
         }
       }
     },
+    // getTotalLeaveDays(employeeRosterAggregate) {
+    //   // TODO: Add leave days
+    //   return 0 ;
+    // },
     getActualTotalDays(employeeRosterAggregate, calendarData) {
+      console.log("Hi") ;
       return employeeRosterAggregate.numberOfWorkedDays + this.getTotalLeaveDays(employeeRosterAggregate) + calendarData.numberOfHolidaysInCurrentMonth;
     },
     getGrossSalary(selectedEmployee) {

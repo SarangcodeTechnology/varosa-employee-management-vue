@@ -1042,6 +1042,8 @@ export default {
     },
     applyChanges() {
       let temp = this;
+      console.log("New roster") ;
+      console.log(temp.newEmployeeRosters) ;
       if (temp.newEmployeeRosters.length > 0) {
         this.makePostRequest({
           route: "employeeRoster/bulkSave",
