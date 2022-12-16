@@ -22,7 +22,6 @@
               style="width: 100%"
               text
               color="blue"
-              @click="navigateToRoute"
             >
               Go
             </v-btn>
