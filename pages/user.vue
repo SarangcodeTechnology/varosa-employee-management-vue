@@ -1,4 +1,4 @@
-<script>
+<script >
 import { mapActions, mapGetters } from "vuex";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";

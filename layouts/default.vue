@@ -361,21 +361,21 @@ const defaultLayout =  {
             },
           ],
         },
-        {
-          subheading: "Details",
-          listItems: [
-            {
-              icon: "fa-solid fa-user-clock",
-              title: "Client Details",
-              to: "client-details",
-            },
-            {
-              icon: "fa-solid fa-user-clock",
-              title: "Employee Details",
-              to: "employee-details",
-            },
-          ],
-        },
+        // {
+        //   subheading: "Details",
+        //   listItems: [
+        //     {
+        //       icon: "fa-solid fa-user-clock",
+        //       title: "Client Details",
+        //       to: "client-details",
+        //     },
+        //     {
+        //       icon: "fa-solid fa-user-clock",
+        //       title: "Employee Details",
+        //       to: "employee-details",
+        //     },
+        //   ],
+        // },
         {
           subheading: "Leave",
           listItems: [

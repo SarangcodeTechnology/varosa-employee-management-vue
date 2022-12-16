@@ -5,11 +5,13 @@ const helpers = {
     fileName = "export",
     responseGetter,
     listAt,
+    columns,
     sheetName = "Sheet1",
   }) {
+    // console.log("Yo") ;
     try {
       const response = await responseGetter();
-      console.log(response)
+      // console.log(response)
       const items = eval(`response.${listAt}`);
       if (!Array.isArray(items)) {
         throw new Error(
@@ -18,15 +20,17 @@ const helpers = {
         );
       }
 
-      const columns = Object.keys(items[0]).map((key) => ({
+      const columnsToUse = columns ??  Object.keys(items[0]).map((key) => ({
         label: key,
         value: key,
       }));
 
+      console.log("Columns: ", columnsToUse)
+
       const rawData = [
         {
           sheet: sheetName,
-          columns,
+          columns: columnsToUse,
           content: items,
         },
       ];
@@ -36,10 +40,11 @@ const helpers = {
         extraLength: 3,
         writeMode: "writeFile",
         writeOptions: {},
-        RTL: true,
+        // RTL: true,
       };
 
       xlsx(rawData, setttings);
+
     } catch (e) {
       throw new Error("JSON to Excel Error: " + e);
     }
