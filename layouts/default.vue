@@ -61,7 +61,7 @@
         :rounded="!clipped ? 'lg' : '0'"
         app
         fixed
-        color="#FFFFFF"
+        color="#ffffff"
         style="box-shadow: 0 0 10px 0 #bcbcbc !important"
       >
         <NuxtLink :to="'/'" class="mr-7">
@@ -362,6 +362,21 @@ const defaultLayout =  {
           ],
         },
         {
+          subheading: "Details",
+          listItems: [
+            {
+              icon: "fa-solid fa-user-clock",
+              title: "Client Details",
+              to: "client-details",
+            },
+            {
+              icon: "fa-solid fa-user-clock",
+              title: "Employee Details",
+              to: "employee-details",
+            },
+          ],
+        },
+        {
           subheading: "Leave",
           listItems: [
             {
@@ -449,7 +464,7 @@ export default defaultLayout
 }
 .v-app-bar {
   i.v-icon.v-icon {
-    color: #212121;
+    color: #212121 ;
   }
 }
 

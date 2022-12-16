@@ -5,14 +5,7 @@
     </h2>
     <hr />
     <h2 style="padding: 15px 10px">Quick Links</h2>
-    <div
-      style="
-        display: flex;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: start;
-      "
-    >
+    <div style="display: flex;align-items: center;flex-wrap: wrap; justify-content: space-between;" >
       <v-card
         style="margin: 10px"
         v-for="linkDetail in links"
@@ -24,11 +17,16 @@
           <div class="text--primary">{{ linkDetail.description }}</div>
         </v-card-text>
         <v-card-actions>
-          <router-link  style="width: 100%" :to="linkDetail.to" >
-            <v-btn style="width: 100%" text color="blue" @click="navigateToRoute">
-            Go
-          </v-btn>
-        </router-link>
+          <router-link style="width: 100%" :to="linkDetail.to">
+            <v-btn
+              style="width: 100%"
+              text
+              color="blue"
+              @click="navigateToRoute"
+            >
+              Go
+            </v-btn>
+          </router-link>
         </v-card-actions>
       </v-card>
     </div>
@@ -91,18 +89,20 @@ export default {
           to: "/sheet",
           title: "Monthly Salary Sheet",
           description: "View staff's monthly salary sheet.",
-        }, {
+        },
+        {
           to: "/user",
           title: "User Management",
-          description: "View all the users that have access to this application.",
+          description:
+            "View all the users that have access to this application.",
         },
       ],
     };
   },
   methods: {
-    navigateToRoute() {
-      console.log(this.$vuetify.goTo("salary"));
-    },
+    // navigateToRoute() {
+    //   console.log(this.$vuetify.goTo("salary"));
+    // },
   },
 };
 </script>

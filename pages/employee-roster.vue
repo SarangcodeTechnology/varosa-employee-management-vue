@@ -550,6 +550,7 @@ export default {
               };
               roster.numberOfHolidays = roster.days.filter(item => item.isHoliday && !item.isWeekend).length;
               tempRoster.push(roster);
+              console.log(tempRoster) ;
             }
             temp.employeeData = tempRoster;
             this.getEmployeeLeaveDetails(item);
