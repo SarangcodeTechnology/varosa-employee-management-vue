@@ -357,7 +357,7 @@ export default {
         await helpers.jsonToExcel({
           fileName: "Holidays",
           sheetName:
-            "Holidays: " +
+            "Holidays= " +
             (this.selectedFilterOption == "A" ? "Active" : "Inactive"),
           responseGetter: this.responseGetter,
           listAt: "data.data",

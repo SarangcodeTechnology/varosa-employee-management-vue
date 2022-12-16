@@ -131,7 +131,7 @@ export default {
         await helpers.jsonToExcel({
           fileName: this.nepaliDate + " - Leave Payout Sheet",
           sheetName:
-            "Leave Sheet: ",
+            "Leave Sheet= ",
           responseGetter: this.responseGetter,
           listAt: "data.data",
         });

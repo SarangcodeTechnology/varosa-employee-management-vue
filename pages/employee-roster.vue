@@ -722,8 +722,6 @@ export default {
 
       const monthName = this.getCurrentMonthName();
 
-      console.log(dataHeaders);
-
       try {
         await helpers.jsonToExcel({
           fileName:
@@ -731,11 +729,15 @@ export default {
             " - " +
             monthName +
             " - Employee Details",
-          sheetName: "Year: " + yearName,
+          sheetName: "Year= " + yearName,
           responseGetter: this.responseGetter,
           listAt: "data",
+          headers: [
+            "Employee's Name: " + this.selectedEmployee.staffName,
+            "Month Of: " + monthName,
+          ],
           columns: dataHeaders.map(function (d) {
-            return { label: d.toString(), value: d.toString() };
+            return { header: d.toString(), key: d.toString() };
           }),
         });
       } catch (e) {

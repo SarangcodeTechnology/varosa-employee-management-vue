@@ -513,7 +513,7 @@ export default {
           });
 
           empData.days.forEach(function (day) {
-            row[ "Day " + day.date.toString()] = day.workedHours;
+            row["Day " + day.date.toString()] = day.workedHours;
           });
           content.push(row);
         });
@@ -634,11 +634,15 @@ export default {
             " - " +
             monthName +
             " - Client Details",
-          sheetName: "Year: " + yearName,
+          sheetName: "Year= " + yearName,
           responseGetter: this.responseGetter,
           listAt: "data",
+          headers: [
+            "Client's Name: " + this.selectedClient.siteName,
+            "Month Of: " + monthName,
+          ],
           columns: dataHeaders.map(function (d) {
-            return { label: d.toString(), value: d.toString() };
+            return { header: d.toString(), key: d.toString() };
           }),
         });
       } catch (e) {

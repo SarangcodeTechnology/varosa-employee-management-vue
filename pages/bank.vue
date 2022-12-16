@@ -216,7 +216,7 @@ export default {
         await helpers.jsonToExcel({
           fileName: "Bank List",
           sheetName:
-            "Banks: " +
+            "Banks= " +
             (this.selectedFilterOption == "A" ? "Active" : "Inactive"),
           responseGetter: this.responseGetter,
           listAt: "data.data",

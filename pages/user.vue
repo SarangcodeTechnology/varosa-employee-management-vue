@@ -120,7 +120,7 @@ export default {
       try {
         await helpers.jsonToExcel({
           fileName: "Users",
-          sheetName: "Users: " + (this.activeStatus ? "Active" : "Inactive"),
+          sheetName: "Users= " + (this.activeStatus ? "Active" : "Inactive"),
           responseGetter: this.responseGetter,
           listAt: "data.data",
         });

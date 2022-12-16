@@ -1,4 +1,5 @@
-import xlsx from "json-as-xlsx";
+import FileSaver from "file-saver";
+import exceljs from "exceljs";
 
 const helpers = {
   jsonToExcel: async function ({
@@ -6,12 +7,14 @@ const helpers = {
     responseGetter,
     listAt,
     columns,
+    headers = [],
     sheetName = "Sheet1",
   }) {
-    // console.log("Yo") ;
     try {
       const response = await responseGetter();
-      // console.log(response)
+
+      const workbook = new exceljs.Workbook();
+
       const items = eval(`response.${listAt}`);
       if (!Array.isArray(items)) {
         throw new Error(
@@ -20,31 +23,56 @@ const helpers = {
         );
       }
 
-      const columnsToUse = columns ??  Object.keys(items[0]).map((key) => ({
-        label: key,
-        value: key,
-      }));
+      const columnsToUse =
+        columns ??
+        Object.keys(items[0]).map((key) => ({
+          header: key,
+          key: key,
+        }));
 
-      // console.log("Columns: ", columnsToUse)
+      const sheet = workbook.addWorksheet(sheetName);
+      sheet.columns = columnsToUse;
 
-      const rawData = [
-        {
-          sheet: sheetName,
-          columns: columnsToUse,
-          content: items,
-        },
-      ];
-
-      const setttings = {
-        fileName,
-        extraLength: 3,
-        writeMode: "writeFile",
-        writeOptions: {},
-        // RTL: true,
+      sheet.addRows(items);
+      const autoWidth = (worksheet, minimalWidth = 6) => {
+        worksheet.columns.forEach((column) => {
+          let maxColumnLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            maxColumnLength = Math.max(
+              maxColumnLength,
+              minimalWidth,
+              cell.value ? cell.value.toString().length : 0
+            );
+          });
+          column.width = maxColumnLength + 2;
+        });
       };
 
-      xlsx(rawData, setttings);
+      autoWidth(sheet);
 
+      if (headers.length > 0) {
+        headers.reverse().forEach((header) => {
+          sheet.spliceRows(1, 0, []);
+          sheet.getCell("A1").value = header;
+          sheet.getCell("A1").alignment = { horizontal: "center" };
+          sheet.getCell("A1").font = { bold: true, size: 12 };
+        });
+
+        for (let i = 1; i <= headers.length; i++) {
+          const range =
+            sheet.getRow(i).getCell(1).address +
+            ":" +
+            sheet.getRow(i).getCell(columnsToUse.length).address;
+          sheet.mergeCells(range);
+        }
+      }
+
+      workbook.xlsx.writeBuffer().then(function (data) {
+        var blob = new Blob([data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        FileSaver.saveAs(blob, fileName + ".xlsx");
+      });
     } catch (e) {
       throw new Error("JSON to Excel Error: " + e);
     }

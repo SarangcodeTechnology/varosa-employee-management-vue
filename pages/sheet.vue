@@ -245,7 +245,7 @@ export default {
             configs.year +
             "-salary-sheet: " +
             (configs.isNepaliDate ? "Nepali" : "English"),
-          sheetName: "Salaries: ",
+          sheetName: "Salaries= ",
           responseGetter: this.responseGetter,
           listAt: "data.data",
         });

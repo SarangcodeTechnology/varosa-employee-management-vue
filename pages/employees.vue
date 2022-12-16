@@ -2199,7 +2199,7 @@ export default {
       try {
         await helpers.jsonToExcel({
           fileName: "Employees",
-          sheetName: "Employees: " + this.selectedFilterOption,
+          sheetName: "Employees= " + this.selectedFilterOption,
           responseGetter: this.responseGetter,
           listAt: "data.data",
         });
