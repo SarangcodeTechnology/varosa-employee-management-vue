@@ -25,7 +25,7 @@ const helpers = {
         value: key,
       }));
 
-      console.log("Columns: ", columnsToUse)
+      // console.log("Columns: ", columnsToUse)
 
       const rawData = [
         {

@@ -423,28 +423,226 @@ export default {
     };
   },
   methods: {
-    responseGetter() {
-      return this.makePostRequest({
-          route: "employeeRoster/client",
-          data: {
-            clientId: this.selectedClient.id,
-            isNepaliDate: this.selectedClient.useNepaliCalendar,
-            month: this.selectedClient.selectedMonth,
-            year: this.selectedClient.selectedYear,
-          },
-        }) ;
+    getExportHeaders() {
+      const currentEmpData = this.rosterByEmployees;
+      let dataHeaders = ["SN", "VS No", "Name"];
+
+      currentEmpData[0].days.forEach((day) => {
+        dataHeaders.push("Day " + day.date);
+      });
+
+      dataHeaders = [
+        ...dataHeaders,
+        "Worked Hr",
+        "Leave Hr",
+        "Holiday Basic Hour",
+        "Total Hr",
+        "Overtime",
+        "Holiday Hr",
+      ];
+      return dataHeaders;
     },
-    async toExcel() {
+    getCurrentYearName() {
+      return this.selectedClient.useNepaliCalendar
+        ? this.selectedNepaliYear
+        : this.selectedEnglishYear;
+    },
+
+    getCurrentMonthName() {
+      return this.selectedClient.useNepaliCalendar
+        ? this.nepaliMonthList[this.selectedNepaliMonth - 1]
+        : this.englishMonthList[this.selectedEnglishMonth - 1];
+    },
+    async responseGetter() {
       try {
-        await helpers.jsonToExcel({
-          fileName: "Client Roster",
-          sheetName:
-            "Client Roster: " ,
-          responseGetter: this.responseGetter,
-          listAt: "data.data",
+        const yearName = this.getCurrentYearName();
+
+        const monthName = this.getCurrentMonthName();
+
+        const currentEmpData = this.rosterByEmployees;
+
+        console.log(currentEmpData);
+
+        let previousMonthEmpData;
+
+        try {
+          await this.previousMonth();
+          previousMonthEmpData = this.rosterByEmployees;
+          console.log("Evaluated previous month data");
+          this.nextMonth();
+        } catch (e) {
+          console.log(e);
+          this.$store.dispatch("toast/setSnackbar", {
+            text: e,
+          });
+        }
+
+        const dataHeaders = this.getExportHeaders();
+
+        let employeeCount = 1;
+
+        let content = [];
+
+        currentEmpData.forEach(function (empData) {
+          let row = {};
+
+          dataHeaders.forEach(function (headerName) {
+            row[headerName] = getValueOf(headerName);
+            function getValueOf(key) {
+              if (dataHeaders.indexOf(key) == -1)
+                throw new Error("Invalid key: " + key);
+              if (key == "SN") return employeeCount++;
+              if (key == "Name") return empData.employee.staffName;
+              if (key == "VS No") return empData.employee.vsNo;
+              if (key == "Worked Hr")
+                return empData.totalHours.totalWorkedHours;
+              if (key == "Leave Hr") return empData.totalHours.totalLeaveHours;
+              if (key == "Holiday Basic Hour")
+                return empData.totalHours.totalHolidayBasicHours;
+              if (key == "Total Hr")
+                return (
+                  empData.totalHours.totalWorkedHours +
+                  empData.totalHours.totalLeaveHours +
+                  empData.totalHours.totalHolidayBasicHours
+                );
+              if (key == "Overtime")
+                return empData.totalHours.totalOvertimeHours;
+              if (key == "Holiday Hr")
+                return empData.totalHours.totalHolidayHours;
+            }
+          });
+
+          empData.days.forEach(function (day) {
+            row[ "Day " + day.date.toString()] = day.workedHours;
+          });
+          content.push(row);
         });
+
+        // total for current month row
+        let totalForCurrentMonthRow = { ...content[content.length - 1] };
+        for (let prop in totalForCurrentMonthRow) {
+          totalForCurrentMonthRow[prop] = "";
+        }
+        totalForCurrentMonthRow["Holiday Basic Hour"] =
+          "Total for the month of " + monthName;
+        totalForCurrentMonthRow["Total Hr"] = currentEmpData.reduce(function (
+          prev,
+          curr
+        ) {
+          return (
+            prev +
+            curr.totalHours.totalWorkedHours +
+            curr.totalHours.totalLeaveHours +
+            curr.totalHours.totalHolidayBasicHours
+          );
+        },
+        0);
+
+        totalForCurrentMonthRow["Overtime"] = currentEmpData.reduce(function (
+          prev,
+          curr
+        ) {
+          return prev + curr.totalHours.totalOvertimeHours;
+        },
+        0);
+
+        totalForCurrentMonthRow["Holiday Hr"] = currentEmpData.reduce(function (
+          prev,
+          curr
+        ) {
+          return prev + curr.totalHours.totalHolidayHours;
+        },
+        0);
+
+        content.push(totalForCurrentMonthRow);
+
+        // previous month calculation
+        if (previousMonthEmpData) {
+          // total for current month row
+          let totalForPreviousMonth = { ...content[content.length - 1] };
+          for (let prop in totalForPreviousMonth) {
+            totalForPreviousMonth[prop] = "";
+          }
+          totalForPreviousMonth["Holiday Basic Hour"] =
+            "Total for the previous month";
+          totalForPreviousMonth["Total Hr"] = previousMonthEmpData.reduce(
+            function (prev, curr) {
+              return (
+                prev +
+                curr.totalHours.totalWorkedHours +
+                curr.totalHours.totalLeaveHours +
+                curr.totalHours.totalHolidayBasicHours
+              );
+            },
+            0
+          );
+
+          totalForPreviousMonth["Overtime"] = previousMonthEmpData.reduce(
+            function (prev, curr) {
+              return prev + curr.totalHours.totalOvertimeHours;
+            },
+            0
+          );
+
+          totalForPreviousMonth["Holiday Hr"] = previousMonthEmpData.reduce(
+            function (prev, curr) {
+              return prev + curr.totalHours.totalHolidayHours;
+            },
+            0
+          );
+
+          content.push(totalForPreviousMonth);
+
+          // difference calculation:
+          let differenceRow = { ...content[content.length - 1] };
+          differenceRow["Holiday Basic Hour"] = "Difference in Duty Hours";
+          differenceRow["Total Hr"] =
+            totalForPreviousMonth["Total Hr"] -
+            totalForCurrentMonthRow["Total Hr"];
+          differenceRow["Overtime"] =
+            totalForPreviousMonth["Overtime"] -
+            totalForCurrentMonthRow["Overtime"];
+          differenceRow["Holiday Hr"] =
+            totalForPreviousMonth["Holiday Hr"] -
+            totalForCurrentMonthRow["Holiday Hr"];
+          content.push(differenceRow);
+        }
+
+        return { data: content };
       } catch (e) {
         console.log(e);
+        this.$store.dispatch("toast/setSnackbar", {
+          text: "Error Getting response: " + e,
+        });
+      }
+    },
+    async toExcel() {
+      const dataHeaders = this.getExportHeaders();
+
+      const yearName = this.getCurrentYearName();
+
+      const monthName = this.getCurrentMonthName();
+
+      // console.log(dataHeaders);
+
+      // console.log(this.selectedClient.siteName) ;
+
+      try {
+        await helpers.jsonToExcel({
+          fileName:
+            this.selectedClient.siteName +
+            " - " +
+            monthName +
+            " - Client Details",
+          sheetName: "Year: " + yearName,
+          responseGetter: this.responseGetter,
+          listAt: "data",
+          columns: dataHeaders.map(function (d) {
+            return { label: d.toString(), value: d.toString() };
+          }),
+        });
+      } catch (e) {
+        console.log(e, e.stack);
         this.$store.dispatch("toast/setSnackbar", {
           text: "Excel Error: " + e,
         });
@@ -497,12 +695,16 @@ export default {
       if (this.selectedClient.useNepaliCalendar) {
         if (this.selectedNepaliMonth > 1) {
           this.selectedNepaliMonth--;
-          this.getClient(this.selectedClient);
+          return this.getClient(this.selectedClient);
+        } else {
+          throw new Error("Cannot find previous month");
         }
       } else {
         if (this.selectedEnglishMonth > 1) {
           this.selectedEnglishMonth--;
-          this.getClient(this.selectedClient);
+          return this.getClient(this.selectedClient);
+        } else {
+          throw new Error("Cannot find previous month");
         }
       }
     },
@@ -523,7 +725,7 @@ export default {
       let temp = this;
       temp.isLoading = true;
       if (!!item) {
-        this.makePostRequest({
+        return this.makePostRequest({
           route: "employeeRoster/client",
           data: {
             clientId: item.id,

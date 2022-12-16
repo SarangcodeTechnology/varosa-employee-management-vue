@@ -554,6 +554,7 @@ export default {
         try {
           await this.previousMonth();
           previousMonthEmpData = this.employeeData;
+          console.log("Evaluated previous month data");
           this.nextMonth();
         } catch (e) {
           console.log(e);
@@ -562,7 +563,6 @@ export default {
           });
         }
 
-        console.log("Evaluated previous month data");
 
         const dataHeaders = this.getExportHeaders();
 
