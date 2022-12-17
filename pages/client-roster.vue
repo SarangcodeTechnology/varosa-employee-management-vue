@@ -638,8 +638,10 @@ export default {
           responseGetter: this.responseGetter,
           listAt: "data",
           headers: [
+            "Monthly Client Details",
             "Client's Name: " + this.selectedClient.siteName,
-            "Month Of: " + monthName,
+            "Month Of: " + monthName + ", " + yearName,
+            "Report Generated on: " + new Date().toLocaleString(),
           ],
           columns: dataHeaders.map(function (d) {
             return { header: d.toString(), key: d.toString() };

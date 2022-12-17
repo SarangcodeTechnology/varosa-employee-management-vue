@@ -55,7 +55,8 @@ const helpers = {
           sheet.spliceRows(1, 0, []);
           sheet.getCell("A1").value = header;
           sheet.getCell("A1").alignment = { horizontal: "center" };
-          sheet.getCell("A1").font = { bold: true, size: 12 };
+          sheet.getCell("A1").font = { bold: true, size: 11 };
+          sheet.getRow(1).height = 18;
         });
 
         for (let i = 1; i <= headers.length; i++) {
