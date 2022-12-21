@@ -186,125 +186,278 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-data-table
-              :search="search"
-              :items-per-page="25"
-              :loading="isLoading"
-              fixed-header
-              loading-text="Fetching data. Please wait..."
-              :footer-props="{
-                showFirstLastPage: true,
-                firstIcon: 'fas fa-angle-double-left',
-                lastIcon: 'fas fa-angle-double-right',
-                nextIcon: 'fas fa-angle-right',
-                prevIcon: 'fas fa-angle-left',
-                itemsPerPageOptions: [25, 50, 100, -1],
-              }"
-              :items="employeeData"
-              :headers="getHeaders"
-            >
-              <template v-slot:item.actions="{ item }">
-                <v-btn
-                  icon
-                  color="error"
-                  @click.stop.prevent="deleteItem(item)"
+            <div class="dt-container">
+              <div class="freezed-dt-container">
+                <v-data-table
+                  class="freezedDT"
+                  ref="dt1"
+                  :items-per-page="employeeData.length"
+                  :loading="isLoading"
+                  calculate-widths
+                  disable-sort
+                  :item-class="trClass"
+                  :search="search"
+                  hide-default-footer
+                  fixed-header
+                  loading-text="Fetching data. Please wait..."
+                  :footer-props="{}"
+                  :items="employeeData"
+                  :headers="headers1"
                 >
-                  <v-icon>fas fa-trash-alt</v-icon>
-                </v-btn>
-              </template>
-              <template
-                v-for="(tempItem, j) in numberOfDaysInCurrentMonth"
-                v-slot:[`item.days[${j}].workedHours`]="{ item, index }"
-              >
-                <v-menu close-on-content-click offset-y>
-                  <template v-slot:activator="{ attrs, on }">
-                    <v-text-field
-                      :background-color="
-                        getBackgroundColor(item.days[j] ? item.days[j] : null)
-                      "
-                      v-bind="attrs"
-                      @contextmenu.stop.prevent="on.click"
-                      class="mt-3"
-                      type="number"
-                      dense
-                      outlined
-                      :value="item.days[j] ? item.days[j].workedHours : ''"
-                      @input="newHourLog($event, index, j)"
-                    ></v-text-field>
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn
+                      icon
+                      color="error"
+                      @click.stop.prevent="deleteItem(item)"
+                    >
+                      <v-icon>fas fa-trash-alt</v-icon>
+                    </v-btn>
                   </template>
-                  <v-list
-                    v-if="!!item.days[j] ? !item.days[j].isWeekend : false"
+                  <template
+                    v-for="(tempItem, j) in numberOfDaysInCurrentMonth"
+                    v-slot:[`item.days[${j}].workedHours`]="{ item, index }"
                   >
-                    <v-list-item
-                      v-if="!!item.days[j] ? !item.days[j].isHoliday : false"
-                      @click="setLeave(item.days[j].workedHours, index, j)"
+                    <v-menu close-on-content-click offset-y>
+                      <template v-slot:activator="{ attrs, on }">
+                        <v-text-field
+                          :background-color="
+                            getBackgroundColor(
+                              item.days[j] ? item.days[j] : null
+                            )
+                          "
+                          v-bind="attrs"
+                          @contextmenu.stop.prevent="on.click"
+                          class="mt-3"
+                          type="number"
+                          dense
+                          outlined
+                          :value="item.days[j] ? item.days[j].workedHours : ''"
+                          @input="newHourLog($event, index, j)"
+                        ></v-text-field>
+                      </template>
+                      <v-list
+                        v-if="!!item.days[j] ? !item.days[j].isWeekend : false"
+                      >
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="setLeave(item.days[j].workedHours, index, j)"
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isLeave
+                                  : false
+                              )
+                                ? "Undo Leave"
+                                : "Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="
+                            setSickLeave(item.days[j].workedHours, index, j)
+                          "
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isSick
+                                  : false
+                              )
+                                ? "Undo Sick Leave"
+                                : "Sick Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="setAbsent(item.days[j].workedHours, index, j)"
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isAbsent
+                                  : false
+                              )
+                                ? "Undo Absent"
+                                : "Absent"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="!!item.days[j] ? item.days[j].isHoliday : false"
+                          @click="
+                            setHolidayBasicHours(
+                              item.days[j].workedHours,
+                              index,
+                              j
+                            )
+                          "
+                        >
+                          <v-list-item-title>
+                            {{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j]
+                                      .addHolidayBasicHours
+                                  : false
+                              )
+                                ? "Undo Holiday basic hours"
+                                : "Add holiday basic hours"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </template>
+                </v-data-table>
+              </div>
+              <div class="bg-dt-container">
+                <v-data-table
+                  class="freezedDT"
+                  ref="dt2"
+                  :items-per-page="employeeData.length"
+                  :loading="isLoading"
+                  calculate-widths
+                  disable-sort
+                  :item-class="trClass"
+                  :search="search"
+                  hide-default-footer
+                  fixed-header
+                  loading-text="Fetching data. Please wait..."
+                  :footer-props="{}"
+                  :items="employeeData"
+                  :headers="getHeaders"
+                >
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn
+                      icon
+                      color="error"
+                      @click.stop.prevent="deleteItem(item)"
                     >
-                      <v-list-item-title
-                        >{{
-                          (
-                            !!employeeData[index].days[j]
-                              ? employeeData[index].days[j].isLeave
-                              : false
-                          )
-                            ? "Undo Leave"
-                            : "Leave"
-                        }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      v-if="!!item.days[j] ? !item.days[j].isHoliday : false"
-                      @click="setSickLeave(item.days[j].workedHours, index, j)"
-                    >
-                      <v-list-item-title
-                        >{{
-                          (
-                            !!employeeData[index].days[j]
-                              ? employeeData[index].days[j].isSick
-                              : false
-                          )
-                            ? "Undo Sick Leave"
-                            : "Sick Leave"
-                        }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      v-if="!!item.days[j] ? !item.days[j].isHoliday : false"
-                      @click="setAbsent(item.days[j].workedHours, index, j)"
-                    >
-                      <v-list-item-title
-                        >{{
-                          (
-                            !!employeeData[index].days[j]
-                              ? employeeData[index].days[j].isAbsent
-                              : false
-                          )
-                            ? "Undo Absent"
-                            : "Absent"
-                        }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      v-if="!!item.days[j] ? item.days[j].isHoliday : false"
-                      @click="
-                        setHolidayBasicHours(item.days[j].workedHours, index, j)
-                      "
-                    >
-                      <v-list-item-title>
-                        {{
-                          (
-                            !!employeeData[index].days[j]
-                              ? employeeData[index].days[j].addHolidayBasicHours
-                              : false
-                          )
-                            ? "Undo Holiday basic hours"
-                            : "Add holiday basic hours"
-                        }}
-                      </v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </template>
-            </v-data-table>
+                      <v-icon>fas fa-trash-alt</v-icon>
+                    </v-btn>
+                  </template>
+                  <template
+                    v-for="(tempItem, j) in numberOfDaysInCurrentMonth"
+                    v-slot:[`item.days[${j}].workedHours`]="{ item, index }"
+                  >
+                    <v-menu close-on-content-click offset-y>
+                      <template v-slot:activator="{ attrs, on }">
+                        <v-text-field
+                          :background-color="
+                            getBackgroundColor(
+                              item.days[j] ? item.days[j] : null
+                            )
+                          "
+                          v-bind="attrs"
+                          @contextmenu.stop.prevent="on.click"
+                          class="mt-3"
+                          type="number"
+                          dense
+                          outlined
+                          :value="item.days[j] ? item.days[j].workedHours : ''"
+                          @input="newHourLog($event, index, j)"
+                        ></v-text-field>
+                      </template>
+                      <v-list
+                        v-if="!!item.days[j] ? !item.days[j].isWeekend : false"
+                      >
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="setLeave(item.days[j].workedHours, index, j)"
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isLeave
+                                  : false
+                              )
+                                ? "Undo Leave"
+                                : "Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="
+                            setSickLeave(item.days[j].workedHours, index, j)
+                          "
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isSick
+                                  : false
+                              )
+                                ? "Undo Sick Leave"
+                                : "Sick Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="setAbsent(item.days[j].workedHours, index, j)"
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isAbsent
+                                  : false
+                              )
+                                ? "Undo Absent"
+                                : "Absent"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="!!item.days[j] ? item.days[j].isHoliday : false"
+                          @click="
+                            setHolidayBasicHours(
+                              item.days[j].workedHours,
+                              index,
+                              j
+                            )
+                          "
+                        >
+                          <v-list-item-title>
+                            {{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j]
+                                      .addHolidayBasicHours
+                                  : false
+                              )
+                                ? "Undo Holiday basic hours"
+                                : "Add holiday basic hours"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </template>
+                </v-data-table>
+              </div>
+            </div>
           </v-row>
         </v-container>
       </v-container>
@@ -463,6 +616,8 @@ export default {
   },
   data() {
     return {
+      isExcelExporting: false,
+      freezingColumns: 2,
       holidayBasicHours: null,
       search: "",
       isLoading: false,
@@ -514,6 +669,7 @@ export default {
       ],
       headers: [],
       employeeData: [],
+      employeeDataCache: [],
       newEmployeeRosters: [],
       selectedPayload: {},
       holidayModal: false,
@@ -521,13 +677,54 @@ export default {
     };
   },
   methods: {
+    trClass() {
+      return "trFreezed";
+    },
+    manageCellHeights() {
+      const dts = Object.values(this.$refs).map((e) => e.$el);
+      dts.forEach((dt) => {
+        const cells = dt.querySelectorAll("td, th");
+        cells.forEach((cell) => {
+          if (cell.tagName === "TH") {
+            if (!cell.firstChild.classList.contains("freezedHeading")) {
+              cell.firstChild.classList.add("freezedHeading");
+              console.log("Added class to heading");
+            }
+          } else {
+            if (cell.innerHTML[0] !== "<") {
+              cell.innerHTML = `<div class='freezedCell'">${cell.innerHTML}</div>`;
+              console.log("Wrapped cell");
+            }
+          }
+        });
+      });
+
+      console.log(this.$refs);
+
+      const firstThreeColumns = Array.from(
+        this.$refs.dt2.$el.querySelectorAll("th")
+      )
+        .slice(0, this.freezingColumns)
+        .reduce((acc, curr) => {
+          return acc + curr.clientWidth;
+        }, 0);
+
+      this.$refs.dt1.$el.parentElement.style.maxWidth =
+        firstThreeColumns + "px";
+    },
     getExportHeaders() {
-      const currentEmpData = this.employeeData;
+      const currentEmpData = this.employeeData.length > 0 ? this.employeeData : this.employeeDataCache;
       let dataHeaders = ["SN", "Client's Name"];
 
-      currentEmpData[0].days.forEach((day) => {
-        dataHeaders.push("Day " + day.date);
-      });
+      if (currentEmpData.length > 0) {
+        currentEmpData[0].days.forEach((day) => {
+          dataHeaders.push("Day " + day.date);
+        });
+      } else {
+        for (let i = 1; i <= 31; i++) {
+          dataHeaders.push("Day " + i);
+        }
+      }
 
       dataHeaders = [
         ...dataHeaders,
@@ -542,12 +739,15 @@ export default {
     },
 
     async responseGetter() {
+      console.log("Getting response");
       try {
         const yearName = this.getCurrentYearName();
 
         const monthName = this.getCurrentMonthName();
 
         const currentEmpData = this.employeeData;
+
+        const dataHeaders = this.getExportHeaders();
 
         let previousMonthEmpData;
 
@@ -562,9 +762,6 @@ export default {
             text: e,
           });
         }
-
-
-        const dataHeaders = this.getExportHeaders();
 
         let employeeCount = 1;
 
@@ -599,7 +796,7 @@ export default {
           });
 
           empData.days.forEach(function (day) {
-            row[ "Day " + day.date.toString()] = day.workedHours;
+            row["Day " + day.date.toString()] = day.workedHours;
           });
           content.push(row);
         });
@@ -696,7 +893,7 @@ export default {
 
         return { data: content };
       } catch (e) {
-        console.log(e);
+        console.log(e, e.stack);
         this.$store.dispatch("toast/setSnackbar", {
           text: "Error Getting response: " + e,
         });
@@ -716,6 +913,7 @@ export default {
     },
 
     async toExcel() {
+      // this.isExcelExporting = true;
       const dataHeaders = this.getExportHeaders();
 
       const yearName = this.getCurrentYearName();
@@ -734,7 +932,11 @@ export default {
           listAt: "data",
           headers: [
             "Employee Monthly Details",
-            "Employee's Name: " + this.selectedEmployee.staffName,
+            "Employee's Name: " +
+              this.selectedEmployee.staffName +
+              "(" +
+              this.selectedEmployee.vsNo +
+              ")",
             "Month Of: " + monthName + ", " + yearName,
             "Report Generated on: " + new Date().toLocaleString(),
           ],
@@ -747,6 +949,8 @@ export default {
         this.$store.dispatch("toast/setSnackbar", {
           text: "Excel Error: " + e,
         });
+      } finally {
+        // this.isExcelExporting = false;
       }
     },
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
@@ -856,6 +1060,9 @@ export default {
       console.log(item);
       let temp = this;
       temp.isLoading = true;
+      // if (!this.isExcelExporting) {
+      this.employeeData = [];
+      // }
       if (!!item) {
         return this.makePostRequest({
           route: "employeeRoster/employee",
@@ -911,9 +1118,9 @@ export default {
                   (item) => item.isHoliday && !item.isWeekend
                 ).length;
                 tempRoster.push(roster);
-                console.log(tempRoster);
               }
               temp.employeeData = tempRoster;
+              temp.employeeDataCache = tempRoster; 
               this.getEmployeeLeaveDetails(item);
             }
             temp.isLoading = false;
@@ -2136,6 +2343,10 @@ export default {
       headers.push({ text: "Actions", value: "actions" });
       return headers;
     },
+    headers1() {
+      console.log("headers: ", this.getHeaders);
+      return this.getHeaders.slice(0, this.freezingColumns);
+    },
     numberOfDaysInCurrentMonth() {
       if (this.selectedEmployee.useNepaliCalendar) {
         return new NepaliDate(
@@ -2213,6 +2424,12 @@ export default {
         (item) => item.useNepaliCalendar === false
       );
     },
+  },
+  updated() {
+    let temp = this;
+    setTimeout(function () {
+      temp.manageCellHeights();
+    }, 500);
   },
 };
 </script>

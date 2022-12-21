@@ -53,8 +53,8 @@
         </v-row>
 
         <!--Kam garni dt-->
-        <div style="display: flex; flex-wrap: nowrap">
-          <div style="max-width: 250px; width: fit-content">
+        <div class="dt-container" style="left: -13px; width: calc(100% + 24px)">
+          <div class="freezed-dt-container">
             <v-data-table
               ref="dt1"
               :page="pageToShow"
@@ -310,14 +310,14 @@
             </v-data-table>
           </div>
 
-          <div style="overflow-x: scroll">
+          <div class="bg-dt-container">
             <v-data-table
               class="freezedDT"
               ref="dt2"
               calculate-widths
               disable-sort
               @click:row="(item) => editEmployee(item, false)"
-              :headers="headers2"
+              :headers="headers"
               :item-class="trClass"
               :items="tableItems"
               :search="search"
@@ -326,14 +326,7 @@
               fixed-header
               @pagination="onPaginationChange"
               loading-text="Fetching data. Please wait..."
-              :footer-props="{
-                // showFirstLastPage: true,
-                // firstIcon: 'fas fa-angle-double-left',
-                // lastIcon: 'fas fa-angle-double-right',
-                // nextIcon: 'fas fa-angle-right',
-                // prevIcon: 'fas fa-angle-left',
-                // itemsPerPageOptions: [25, 50, 100, -1],
-              }"
+              :footer-props="{}"
             >
               <template v-slot:item.actions="{ item }">
                 <div class="d-flex justify-content-center align-items-center">
@@ -2132,7 +2125,7 @@ export default {
       return "trFreezed";
     },
 
-    onPaginationChange(pagintaion){
+    onPaginationChange(pagintaion) {
       this.pageToShow = pagintaion.page;
     },
 
@@ -2154,6 +2147,18 @@ export default {
           }
         });
       });
+      console.log(this.$refs);
+
+      const firstThreeColumns = Array.from(
+        this.$refs.dt2.$el.querySelectorAll("th")
+      )
+        .slice(0, this.freezingColumns)
+        .reduce((acc, curr) => {
+          return acc + curr.clientWidth;
+        }, 0);
+
+      this.$refs.dt1.$el.parentElement.style.maxWidth =
+        firstThreeColumns + "px";
     },
 
     async onPhotoChange(files) {
