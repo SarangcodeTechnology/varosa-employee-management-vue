@@ -1060,9 +1060,7 @@ export default {
       console.log(item);
       let temp = this;
       temp.isLoading = true;
-      // if (!this.isExcelExporting) {
       this.employeeData = [];
-      // }
       if (!!item) {
         return this.makePostRequest({
           route: "employeeRoster/employee",
