@@ -23,12 +23,16 @@ const helpers = {
         );
       }
 
+      const ignoredKeys = ["password", "createdAt", "updatedAt", "deletedAt"];
+
       const columnsToUse =
         columns ??
-        Object.keys(items[0]).map((key) => ({
-          header: key,
-          key: key,
-        }));
+        Object.keys(items[0])
+          .map((key) => ({
+            header: helpers.camelCaseToTitle(key),
+            key: key,
+          }))
+          .filter((col) => ignoredKeys.indexOf(col.key) === -1);
 
       const sheet = workbook.addWorksheet(sheetName);
       sheet.columns = columnsToUse;
@@ -127,6 +131,11 @@ const helpers = {
       xhr.responseType = "blob";
       xhr.send();
     });
+  },
+
+  camelCaseToTitle: function (text) {
+    const result = text.replace(/([A-Z])/g, " $1");
+    return result.charAt(0).toUpperCase() + result.slice(1);
   },
 };
 
