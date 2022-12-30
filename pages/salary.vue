@@ -161,6 +161,26 @@
                       >{{ salaryDetails.workedHours }} hours</v-col
                     >
                   </v-row>
+                  <!-- <v-row no-gutters>
+                    <v-col cols="4">
+                      <b>Overtime Hours:</b>
+                    </v-col>
+                    <v-col cols="8"
+                      >{{
+                        // showOT() && salaryDetails.calculatedOvertimeHours
+                        newCalculatedOTHours(salaryDetails)
+                      }}
+                      hours</v-col
+                    >
+                  </v-row> -->
+                  <v-row no-gutters>
+                    <v-col cols="4">
+                      <b>Overtime Hours:</b>
+                    </v-col>
+                    <v-col cols="8"
+                      >{{ calculateOvertimeHours(salaryDetails) }} hours</v-col
+                    >
+                  </v-row>
                   <v-row no-gutters>
                     <v-col cols="4">
                       <b>No. of Taken Leaves:</b>
@@ -205,22 +225,6 @@
                   </v-row>
                   <v-row no-gutters>
                     <v-col cols="4">
-                      <b>Total Hours:</b>
-                    </v-col>
-                    <v-col cols="8"
-                      ><b>{{ salaryDetails.totalHours }} hours</b></v-col
-                    >
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="4">
-                      <b>Overtime Hours:</b>
-                    </v-col>
-                    <v-col cols="8"
-                      >{{ calculateOvertimeHours(salaryDetails) }} hours</v-col
-                    >
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="4">
                       <b>Weekend Hours:</b>
                     </v-col>
                     <v-col cols="8"
@@ -233,6 +237,14 @@
                     </v-col>
                     <v-col cols="8"
                       >{{ salaryDetails.holidayHours }} hours</v-col
+                    >
+                  </v-row>
+                  <v-row no-gutters>
+                    <v-col cols="4">
+                      <b>Total Hours:</b>
+                    </v-col>
+                    <v-col cols="8"
+                      ><b>{{ salaryDetails.totalHours }} hours</b></v-col
                     >
                   </v-row>
                   <v-row no-gutters>
@@ -565,6 +577,20 @@ export default {
     this.getAllActiveEmployee();
   },
   methods: {
+    showOT() {
+      console.log(this.salaryDetails.calculatedOvertimeHours);
+      return true;
+    },
+
+    newCalculatedOTHours(salaryDetails) {
+      const workedHours = salaryDetails.workedHours;
+      return workedHours - 208 > 0 ? workedHours - 208 : 0;
+    },
+
+    showRoster() {
+      console.log(JSON.parse(JSON.stringify(this.employeeRosterAggregate)));
+      return true;
+    },
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
     filterEmployee(item, queryText) {
       return (
@@ -1004,6 +1030,9 @@ export default {
         noOfTakenSickLeaves: employeeRosterAggregate.numberOfSickLeaveDays,
         noOfHolidaysInMonth: calendarData.numberOfHolidaysInCurrentMonth,
         totalHours: actualTotalHours,
+        // calculated overtime hours:[ might not be exact though]
+        // calculatedOvertimeHours:
+        //   actualTotalHours - 208 > 0 ? actualTotalHours - 208 : 0,
         weekendHours: employeeRosterAggregate.weekendHours,
         overtimeHours: employeeRosterAggregate.overtimeHours,
         holidayHours: employeeRosterAggregate.holidayHours,

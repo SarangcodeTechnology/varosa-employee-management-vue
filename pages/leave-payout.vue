@@ -105,6 +105,7 @@ export default {
         {text: 'Bank Name', value:'employee.employeeDetails.bank.name'},
         {text: 'Account number', value:'employee.employeeDetails.accountNumber'},
         {text: 'SSF number', value:'employee.employeeDetails.ssfNo'},
+        {text: 'Opening Leave(to change later)', value:'openingLeave'},
         {text: 'Number of Leaves', value:'numberOfLeaves'},
         {text: 'Annual Leaves', value:'dontKnow'},
         {text: 'Sick Leaves', value:'dKnow'},

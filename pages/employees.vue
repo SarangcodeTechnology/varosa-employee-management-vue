@@ -1005,6 +1005,21 @@
                         @blur="$v.editedItem.basicHours.$touch()"
                       ></v-text-field>
                     </v-col>
+                    <v-col cols="4">
+                      <v-text-field
+                        prepend-inner-icon="fa-solid fa-clock"
+                        :readonly="!editingEmployee && !creatingEmployee"
+                        dense
+                        filled
+                        label="Opening Leave"
+                        v-model="editedItem.openingLeave"
+                        @blur="onLeaveBlurred"
+                      >
+                        <!-- v-model="editedItem.basicHours"
+                          @blur="//$v.editedItem.openingLeave.$touch()"
+                        -->
+                      </v-text-field>
+                    </v-col>
                   </v-row>
                 </v-container>
               </v-stepper-content>
@@ -1832,6 +1847,7 @@ export default {
       search: "",
       isLoading: false,
       editedItem: {
+        openingLeave: 0,
         activeStatus: "",
         vsNo: "",
         staffName: "",
@@ -1882,6 +1898,7 @@ export default {
         },
       },
       defaultItem: {
+        openingLeave: 0,
         activeStatus: "",
         vsNo: "",
         staffName: "",
@@ -2121,6 +2138,15 @@ export default {
     },
   },
   methods: {
+    onLeaveBlurred(param) {
+      if (param.srcElement.value > 0) {
+        this.editedItem.openingLeave = parseInt(param.srcElement.value);
+      } else {
+        this.editedItem.openingLeave = 0;
+      }
+      console.log("Set opening leave to: ", this.editedItem.openingLeave);
+    },
+
     trClass() {
       return "trFreezed";
     },
@@ -2372,14 +2398,9 @@ export default {
             if (!this.editedItem.dateOfBirth) {
               this.editedItem.dateOfBirth = "";
             }
-            // console.log(
-            //   "Managed: ",
-            //   this.editedItem.employeeEmergencyDetails.photo
-            // );
-            // console.log(
-            //   "Managed: ",
-            //   this.editedItem.employeeEmergencyDetails.citizenship
-            // );
+            if(!this.editedItem.openingLeave){
+              this.editedItem.openingLeave = 0 ;
+            }
             this.employeeDialog = true;
             this.step = "1";
             if (editingEmployee) {
@@ -2466,7 +2487,7 @@ export default {
     },
     updateEmployee() {
       const temp = this;
-      console.log(temp.editedItem);
+      console.log("sending: ", JSON.parse(JSON.stringify(temp.editedItem)));
       this.makePostRequest({
         route: "employee/update",
         data: {
