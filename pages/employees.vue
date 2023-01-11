@@ -41,7 +41,7 @@
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
-            <v-btn dark>
+            <v-btn dark @click="print" >
               <v-icon left>fas fa-print</v-icon>
               Print
             </v-btn>
@@ -326,7 +326,11 @@
               fixed-header
               @pagination="onPaginationChange"
               loading-text="Fetching data. Please wait..."
-              :footer-props="{}"
+              :class="{dataTableForPrint: this.$store.state.printControl.isPrinting}"
+              :footer-props="{
+                'items-per-page-options': [25],
+                'disable-items-per-page': true,
+              }"
             >
               <template v-slot:item.actions="{ item }">
                 <div class="d-flex justify-content-center align-items-center">
@@ -2138,6 +2142,12 @@ export default {
     },
   },
   methods: {
+    rowItemClass() {
+      return this.$store.state.printControl.isPrinting ? "trForPrint" : "";
+    },
+    print() {
+      helpers.print(this.$store);
+    },
     onLeaveBlurred(param) {
       if (param.srcElement.value > 0) {
         this.editedItem.openingLeave = parseInt(param.srcElement.value);
@@ -2398,8 +2408,8 @@ export default {
             if (!this.editedItem.dateOfBirth) {
               this.editedItem.dateOfBirth = "";
             }
-            if(!this.editedItem.openingLeave){
-              this.editedItem.openingLeave = 0 ;
+            if (!this.editedItem.openingLeave) {
+              this.editedItem.openingLeave = 0;
             }
             this.employeeDialog = true;
             this.step = "1";

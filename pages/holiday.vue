@@ -59,7 +59,7 @@
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
-            <v-btn dark>
+            <v-btn dark @click="print" >
               <v-icon left>fas fa-print</v-icon>
               Print
             </v-btn>
@@ -341,6 +341,12 @@ export default {
     },
   },
   methods: {
+    rowItemClass() {
+      return this.$store.state.printControl.isPrinting ? "trForPrint" : "";
+    },
+    print() {
+      helpers.print(this.$store);
+    },
     responseGetter() {
       const temp = this;
       return this.$store.dispatch("api/makeGetRequest", {

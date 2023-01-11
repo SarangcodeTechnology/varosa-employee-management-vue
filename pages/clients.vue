@@ -62,6 +62,7 @@
           :loading="isLoading"
           fixed-header
           loading-text="Fetching data. Please wait..."
+          :class="{dataTableForPrint: this.$store.state.printControl.isPrinting}"
           :footer-props="{
             showFirstLastPage: true,
             firstIcon: 'fas fa-angle-double-left',
@@ -827,8 +828,11 @@ export default {
     },
   },
   methods: {
-    print(){
-      helpers.print(this.$store)  ;
+    rowItemClass() {
+      return this.$store.state.printControl.isPrinting ? "trForPrint" : "";
+    },
+    print() {
+      helpers.print(this.$store);
     },
     responseGetter() {
       const temp = this;

@@ -25,7 +25,7 @@
               <v-icon left>fas fa-file-excel</v-icon>
               Excel
             </v-btn>
-            <v-btn dark>
+            <v-btn dark @click="print">
               <v-icon left>fas fa-print</v-icon>
               Print
             </v-btn>
@@ -86,6 +86,7 @@
                       :items-per-page="25"
                       calculate-widths
                       @click:row="(item)=>addNewDialogue('View', item.name)"
+                      :class="{dataTableForPrint: this.$store.state.printControl.isPrinting}"
                       :footer-props="{
                         showFirstLastPage: true,
                         firstIcon : 'fas fa-angle-double-left',
@@ -204,6 +205,12 @@ export default {
       }
   },
   methods: {
+    rowItemClass() {
+      return this.$store.state.printControl.isPrinting ? "trForPrint" : "";
+    },
+    print() {
+      helpers.print(this.$store);
+    },
     responseGetter() {
       return this.$store.dispatch("api/makeGetRequest", {
         route:
