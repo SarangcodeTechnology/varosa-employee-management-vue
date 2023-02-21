@@ -1,0 +1,11 @@
+{
+  "ColumnFreezedDataTable": {
+    "description": "Auto imported from components/columnFreezedDataTable.vue"
+  },
+  "ConfirmDialog": {
+    "description": "Auto imported from components/confirmDialog.vue"
+  },
+  "Toast": {
+    "description": "Auto imported from components/toast.vue"
+  }
+}

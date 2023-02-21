@@ -1,0 +1,187 @@
+[
+  {
+    "name": "bank",
+    "path": "/bank",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\bank.vue",
+    "chunkName": "pages/bank",
+    "meta": {
+      "name": "BankManagement"
+    }
+  },
+  {
+    "name": "category",
+    "path": "/category",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\category.vue",
+    "chunkName": "pages/category",
+    "meta": {
+      "name": "CategoryManagement"
+    }
+  },
+  {
+    "name": "change-password",
+    "path": "/change-password",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\change-password.vue",
+    "chunkName": "pages/change-password",
+    "meta": {
+      "name": "ChangePassword"
+    }
+  },
+  {
+    "name": "client-roster",
+    "path": "/client-roster",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\client-roster.vue",
+    "chunkName": "pages/client-roster",
+    "meta": {
+      "name": "ClientRoster"
+    }
+  },
+  {
+    "name": "clients",
+    "path": "/clients",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\clients.vue",
+    "chunkName": "pages/clients",
+    "meta": {
+      "name": "ClientManagement",
+      "validations": {
+        "editedItem": {
+          "siteName": {},
+          "address": {},
+          "phone": {}
+        },
+        "employeeMappings": {
+          "newMapping": {
+            "category": {},
+            "quantity": {}
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "employee-roster",
+    "path": "/employee-roster",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\employee-roster.vue",
+    "chunkName": "pages/employee-roster",
+    "meta": {
+      "name": "EmployeeRoster"
+    }
+  },
+  {
+    "name": "employees",
+    "path": "/employees",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\employees.vue",
+    "chunkName": "pages/employees",
+    "meta": {
+      "name": "EmployeeManagement",
+      "validations": {
+        "editedItem": {
+          "vsNo": {},
+          "staffName": {},
+          "phone": {},
+          "category": {},
+          "dateOfBirth": {},
+          "assignedHours": {},
+          "basicHours": {}
+        },
+        "clientMappings": {
+          "newMapping": {
+            "client": {}
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "holiday",
+    "path": "/holiday",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\holiday.vue",
+    "chunkName": "pages/holiday",
+    "meta": {
+      "name": "HolidayManagement"
+    }
+  },
+  {
+    "name": "leave",
+    "path": "/leave",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\leave.vue",
+    "chunkName": "pages/leave",
+    "meta": {
+      "name": "LeaveHistory"
+    }
+  },
+  {
+    "name": "leave-payout",
+    "path": "/leave-payout",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\leave-payout.vue",
+    "chunkName": "pages/leave-payout",
+    "meta": {
+      "name": "Leave Payout"
+    }
+  },
+  {
+    "name": "login",
+    "path": "/login",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\login.vue",
+    "chunkName": "pages/login",
+    "meta": {
+      "name": "Login",
+      "layout": "login",
+      "validations": {
+        "email": {},
+        "password": {}
+      }
+    }
+  },
+  {
+    "name": "salary",
+    "path": "/salary",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\salary.vue",
+    "chunkName": "pages/salary",
+    "meta": {
+      "name": "SalaryDetails"
+    }
+  },
+  {
+    "name": "settings",
+    "path": "/settings",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\settings.vue",
+    "chunkName": "pages/settings",
+    "meta": {
+      "name": "settings"
+    }
+  },
+  {
+    "name": "sheet",
+    "path": "/sheet",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\sheet.vue",
+    "chunkName": "pages/sheet",
+    "meta": {
+      "name": "MonthlySalarySheet"
+    }
+  },
+  {
+    "name": "user",
+    "path": "/user",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\user.vue",
+    "chunkName": "pages/user",
+    "meta": {
+      "name": "UserManagement",
+      "validations": {
+        "clientMappings": {
+          "newMapping": {
+            "client": {}
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "E:\\\\Web Development\\\\Varosa Software\\\\varosa-employee-management-vue\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "meta": {
+      "name": "Dashboard"
+    }
+  }
+]
