@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import TerserPlugin from 'terser-webpack-plugin'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -82,5 +83,17 @@ export default {
   router: {middleware: ['routeNavigationGuard']},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {
+    extractCSS: true,
+    extend(config, ctx) {
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          parallel: false
+        })
+      ]
+    }
+  }
 }
