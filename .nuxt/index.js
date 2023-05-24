@@ -5,7 +5,7 @@ import ClientOnly from 'vue-client-only'
 import NoSsr from 'vue-no-ssr'
 import { createRouter } from './router.js'
 import NuxtChild from './components/nuxt-child.js'
-import NuxtError from '..\\layouts\\error.vue'
+import NuxtError from '../layouts/error.vue'
 import Nuxt from './components/nuxt.js'
 import App from './App.js'
 import { setContext, getLocation, getRouteData, normalizeError } from './utils'
@@ -13,12 +13,12 @@ import { createStore } from './store.js'
 
 /* Plugins */
 
-import nuxt_plugin_plugin_0ccb60d0 from 'nuxt_plugin_plugin_0ccb60d0' // Source: .\\components\\plugin.js (mode: 'all')
-import nuxt_plugin_plugin_09bd5948 from 'nuxt_plugin_plugin_09bd5948' // Source: .\\vuetify\\plugin.js (mode: 'all')
-import nuxt_plugin_axios_6bda67bb from 'nuxt_plugin_axios_6bda67bb' // Source: .\\axios.js (mode: 'all')
-import nuxt_plugin_cookieuniversalnuxt_313b3163 from 'nuxt_plugin_cookieuniversalnuxt_313b3163' // Source: .\\cookie-universal-nuxt.js (mode: 'all')
-import nuxt_plugin_vuexpersister_2c89ea5b from 'nuxt_plugin_vuexpersister_2c89ea5b' // Source: ..\\plugins\\vuex-persister.js (mode: 'client')
-import nuxt_plugin_vnepalidatepicker_6d030b36 from 'nuxt_plugin_vnepalidatepicker_6d030b36' // Source: ..\\plugins\\v-nepali-date-picker.js (mode: 'all')
+import nuxt_plugin_plugin_ca087e5c from 'nuxt_plugin_plugin_ca087e5c' // Source: ./components/plugin.js (mode: 'all')
+import nuxt_plugin_plugin_2da5845c from 'nuxt_plugin_plugin_2da5845c' // Source: ./vuetify/plugin.js (mode: 'all')
+import nuxt_plugin_axios_90a9d230 from 'nuxt_plugin_axios_90a9d230' // Source: ./axios.js (mode: 'all')
+import nuxt_plugin_cookieuniversalnuxt_29a9e690 from 'nuxt_plugin_cookieuniversalnuxt_29a9e690' // Source: ./cookie-universal-nuxt.js (mode: 'all')
+import nuxt_plugin_vuexpersister_2c89ea5b from 'nuxt_plugin_vuexpersister_2c89ea5b' // Source: ../plugins/vuex-persister.js (mode: 'client')
+import nuxt_plugin_vnepalidatepicker_6d030b36 from 'nuxt_plugin_vnepalidatepicker_6d030b36' // Source: ../plugins/v-nepali-date-picker.js (mode: 'all')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)
@@ -215,20 +215,20 @@ async function createApp(ssrContext, config = {}) {
   }
   // Plugin execution
 
-  if (typeof nuxt_plugin_plugin_0ccb60d0 === 'function') {
-    await nuxt_plugin_plugin_0ccb60d0(app.context, inject)
+  if (typeof nuxt_plugin_plugin_ca087e5c === 'function') {
+    await nuxt_plugin_plugin_ca087e5c(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_plugin_09bd5948 === 'function') {
-    await nuxt_plugin_plugin_09bd5948(app.context, inject)
+  if (typeof nuxt_plugin_plugin_2da5845c === 'function') {
+    await nuxt_plugin_plugin_2da5845c(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_axios_6bda67bb === 'function') {
-    await nuxt_plugin_axios_6bda67bb(app.context, inject)
+  if (typeof nuxt_plugin_axios_90a9d230 === 'function') {
+    await nuxt_plugin_axios_90a9d230(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_cookieuniversalnuxt_313b3163 === 'function') {
-    await nuxt_plugin_cookieuniversalnuxt_313b3163(app.context, inject)
+  if (typeof nuxt_plugin_cookieuniversalnuxt_29a9e690 === 'function') {
+    await nuxt_plugin_cookieuniversalnuxt_29a9e690(app.context, inject)
   }
 
   if (process.client && typeof nuxt_plugin_vuexpersister_2c89ea5b === 'function') {

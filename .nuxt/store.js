@@ -8,21 +8,43 @@ const VUEX_PROPERTIES = ['state', 'getters', 'actions', 'mutations']
 let store = {};
 
 (function updateModules () {
-  store = normalizeRoot(require('..\\store\\index.js'), 'store/index.js')
+  store = normalizeRoot(require('../store/index.js'), 'store/index.js')
 
   // If store is an exported method = classic mode (deprecated)
+
+  if (typeof store === 'function') {
+    return console.warn('Classic mode for store/ is deprecated and will be removed in Nuxt 3.')
+  }
 
   // Enforce store modules
   store.modules = store.modules || {}
 
-  resolveStoreModules(require('..\\store\\api.js'), 'api.js')
-  resolveStoreModules(require('..\\store\\auth.js'), 'auth.js')
-  resolveStoreModules(require('..\\store\\calendar.js'), 'calendar.js')
-  resolveStoreModules(require('..\\store\\leave.js'), 'leave.js')
-  resolveStoreModules(require('..\\store\\printControl.js'), 'printControl.js')
-  resolveStoreModules(require('..\\store\\toast.js'), 'toast.js')
+  resolveStoreModules(require('../store/api.js'), 'api.js')
+  resolveStoreModules(require('../store/auth.js'), 'auth.js')
+  resolveStoreModules(require('../store/calendar.js'), 'calendar.js')
+  resolveStoreModules(require('../store/leave.js'), 'leave.js')
+  resolveStoreModules(require('../store/printControl.js'), 'printControl.js')
+  resolveStoreModules(require('../store/toast.js'), 'toast.js')
 
   // If the environment supports hot reloading...
+
+  if (process.client && module.hot) {
+    // Whenever any Vuex module is updated...
+    module.hot.accept([
+      '../store/api.js',
+      '../store/auth.js',
+      '../store/calendar.js',
+      '../store/index.js',
+      '../store/leave.js',
+      '../store/printControl.js',
+      '../store/toast.js',
+    ], () => {
+      // Update `root.modules` with the latest definitions.
+      updateModules()
+      // Trigger a hot update in the store.
+      window.$nuxt.$store.hotUpdate(store)
+    })
+  }
 })()
 
 // createStore

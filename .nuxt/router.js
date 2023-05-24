@@ -4,22 +4,22 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _7ef4e6f2 = () => interopDefault(import('..\\pages\\bank.vue' /* webpackChunkName: "pages/bank" */))
-const _b5f1fe6e = () => interopDefault(import('..\\pages\\category.vue' /* webpackChunkName: "pages/category" */))
-const _1f21e71d = () => interopDefault(import('..\\pages\\change-password.vue' /* webpackChunkName: "pages/change-password" */))
-const _a26e72dc = () => interopDefault(import('..\\pages\\client-roster.vue' /* webpackChunkName: "pages/client-roster" */))
-const _2ac53be6 = () => interopDefault(import('..\\pages\\clients.vue' /* webpackChunkName: "pages/clients" */))
-const _b7cffee2 = () => interopDefault(import('..\\pages\\employee-roster.vue' /* webpackChunkName: "pages/employee-roster" */))
-const _726b1dca = () => interopDefault(import('..\\pages\\employees.vue' /* webpackChunkName: "pages/employees" */))
-const _49a54746 = () => interopDefault(import('..\\pages\\holiday.vue' /* webpackChunkName: "pages/holiday" */))
-const _2057b27c = () => interopDefault(import('..\\pages\\leave.vue' /* webpackChunkName: "pages/leave" */))
-const _0cb95e72 = () => interopDefault(import('..\\pages\\leave-payout.vue' /* webpackChunkName: "pages/leave-payout" */))
-const _56d8aa2e = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
-const _fcef8f56 = () => interopDefault(import('..\\pages\\salary.vue' /* webpackChunkName: "pages/salary" */))
-const _a90e3524 = () => interopDefault(import('..\\pages\\settings.vue' /* webpackChunkName: "pages/settings" */))
-const _1d442d24 = () => interopDefault(import('..\\pages\\sheet.vue' /* webpackChunkName: "pages/sheet" */))
-const _1f731296 = () => interopDefault(import('..\\pages\\user.vue' /* webpackChunkName: "pages/user" */))
-const _e59df1d2 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
+const _189b65c8 = () => interopDefault(import('../pages/bank.vue' /* webpackChunkName: "pages/bank" */))
+const _3fc75cec = () => interopDefault(import('../pages/category.vue' /* webpackChunkName: "pages/category" */))
+const _3d952988 = () => interopDefault(import('../pages/change-password.vue' /* webpackChunkName: "pages/change-password" */))
+const _3446731e = () => interopDefault(import('../pages/client-roster.vue' /* webpackChunkName: "pages/client-roster" */))
+const _fdab15a8 = () => interopDefault(import('../pages/clients.vue' /* webpackChunkName: "pages/clients" */))
+const _662b84ae = () => interopDefault(import('../pages/employee-roster.vue' /* webpackChunkName: "pages/employee-roster" */))
+const _cc0035ae = () => interopDefault(import('../pages/employees.vue' /* webpackChunkName: "pages/employees" */))
+const _71ba6f7c = () => interopDefault(import('../pages/holiday.vue' /* webpackChunkName: "pages/holiday" */))
+const _6a05fd4a = () => interopDefault(import('../pages/leave.vue' /* webpackChunkName: "pages/leave" */))
+const _14305908 = () => interopDefault(import('../pages/leave-payout.vue' /* webpackChunkName: "pages/leave-payout" */))
+const _017df90d = () => interopDefault(import('../pages/login.vue' /* webpackChunkName: "pages/login" */))
+const _2b8cc556 = () => interopDefault(import('../pages/salary.vue' /* webpackChunkName: "pages/salary" */))
+const _32e393a2 = () => interopDefault(import('../pages/settings.vue' /* webpackChunkName: "pages/settings" */))
+const _702d07fa = () => interopDefault(import('../pages/sheet.vue' /* webpackChunkName: "pages/sheet" */))
+const _7788ebd7 = () => interopDefault(import('../pages/user.vue' /* webpackChunkName: "pages/user" */))
+const _37d655f6 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
 
@@ -34,82 +34,82 @@ export const routerOptions = {
 
   routes: [{
     path: "/bank",
-    component: _7ef4e6f2,
+    component: _189b65c8,
     meta: {"name":"BankManagement"},
     name: "bank"
   }, {
     path: "/category",
-    component: _b5f1fe6e,
+    component: _3fc75cec,
     meta: {"name":"CategoryManagement"},
     name: "category"
   }, {
     path: "/change-password",
-    component: _1f21e71d,
+    component: _3d952988,
     meta: {"name":"ChangePassword"},
     name: "change-password"
   }, {
     path: "/client-roster",
-    component: _a26e72dc,
+    component: _3446731e,
     meta: {"name":"ClientRoster"},
     name: "client-roster"
   }, {
     path: "/clients",
-    component: _2ac53be6,
+    component: _fdab15a8,
     meta: {"name":"ClientManagement","validations":{"editedItem":{"siteName":{},"address":{},"phone":{}},"employeeMappings":{"newMapping":{"category":{},"quantity":{}}}}},
     name: "clients"
   }, {
     path: "/employee-roster",
-    component: _b7cffee2,
+    component: _662b84ae,
     meta: {"name":"EmployeeRoster"},
     name: "employee-roster"
   }, {
     path: "/employees",
-    component: _726b1dca,
+    component: _cc0035ae,
     meta: {"name":"EmployeeManagement","validations":{"editedItem":{"vsNo":{},"staffName":{},"phone":{},"category":{},"dateOfBirth":{},"assignedHours":{},"basicHours":{}},"clientMappings":{"newMapping":{"client":{}}}}},
     name: "employees"
   }, {
     path: "/holiday",
-    component: _49a54746,
+    component: _71ba6f7c,
     meta: {"name":"HolidayManagement"},
     name: "holiday"
   }, {
     path: "/leave",
-    component: _2057b27c,
+    component: _6a05fd4a,
     meta: {"name":"LeaveHistory"},
     name: "leave"
   }, {
     path: "/leave-payout",
-    component: _0cb95e72,
+    component: _14305908,
     meta: {"name":"Leave Payout"},
     name: "leave-payout"
   }, {
     path: "/login",
-    component: _56d8aa2e,
+    component: _017df90d,
     meta: {"name":"Login","layout":"login","validations":{"email":{},"password":{}}},
     name: "login"
   }, {
     path: "/salary",
-    component: _fcef8f56,
+    component: _2b8cc556,
     meta: {"name":"SalaryDetails"},
     name: "salary"
   }, {
     path: "/settings",
-    component: _a90e3524,
+    component: _32e393a2,
     meta: {"name":"settings"},
     name: "settings"
   }, {
     path: "/sheet",
-    component: _1d442d24,
+    component: _702d07fa,
     meta: {"name":"MonthlySalarySheet"},
     name: "sheet"
   }, {
     path: "/user",
-    component: _1f731296,
+    component: _7788ebd7,
     meta: {"name":"UserManagement","validations":{"clientMappings":{"newMapping":{"client":{}}}}},
     name: "user"
   }, {
     path: "/",
-    component: _e59df1d2,
+    component: _37d655f6,
     meta: {"name":"Dashboard"},
     name: "index"
   }],

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt --hostname jakshr.com --port 35000",
+    "dev": "nuxt --hostname localhost --port 35000",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
