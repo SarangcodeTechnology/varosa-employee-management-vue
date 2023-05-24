@@ -1,6 +1,6 @@
-export { default as ColumnFreezedDataTable } from '../../components/columnFreezedDataTable.vue'
-export { default as ConfirmDialog } from '../../components/confirmDialog.vue'
-export { default as Toast } from '../../components/toast.vue'
+export const ColumnFreezedDataTable = () => import('../../components/columnFreezedDataTable.vue' /* webpackChunkName: "components/column-freezed-data-table" */).then(c => wrapFunctional(c.default || c))
+export const ConfirmDialog = () => import('../../components/confirmDialog.vue' /* webpackChunkName: "components/confirm-dialog" */).then(c => wrapFunctional(c.default || c))
+export const Toast = () => import('../../components/toast.vue' /* webpackChunkName: "components/toast" */).then(c => wrapFunctional(c.default || c))
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

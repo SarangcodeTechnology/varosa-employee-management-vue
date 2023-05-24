@@ -336,7 +336,7 @@
             label="Employee"
             placeholder="Search by employee name"
             return-object
-            item-text="staffName"
+            item-text="vsNo"
           >
           </v-autocomplete>
         </v-card-text>
