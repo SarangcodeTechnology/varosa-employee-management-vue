@@ -359,6 +359,11 @@ const defaultLayout =  {
               title: "Monthly Salary Sheet",
               to: "sheet",
             },
+            {
+              icon: "fa-solid fa-share-from-square",
+              title: "Dashain Working Calculation",
+              to: "dashain-sheet",
+            },
           ],
         },
         // {

@@ -63,6 +63,16 @@
     "_name": "_fdab15a8"
   },
   {
+    "name": "dashain-sheet",
+    "path": "/dashain-sheet",
+    "component": "/Users/samajdar/varosa-employee-management-vue/pages/dashain-sheet.vue",
+    "chunkName": "pages/dashain-sheet",
+    "meta": {
+      "name": "DashainWorkingCalculation"
+    },
+    "_name": "_1924cc2c"
+  },
+  {
     "name": "employee-roster",
     "path": "/employee-roster",
     "component": "/Users/samajdar/varosa-employee-management-vue/pages/employee-roster.vue",

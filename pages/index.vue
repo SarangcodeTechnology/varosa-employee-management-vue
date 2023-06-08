@@ -90,6 +90,11 @@ export default {
           description: "View staff's monthly salary sheet.",
         },
         {
+          to: "/dashain-sheet",
+          title: "Dashain Working Calculation",
+          description: "View Dashain Working Calculation.",
+        },
+        {
           to: "/user",
           title: "User Management",
           description:

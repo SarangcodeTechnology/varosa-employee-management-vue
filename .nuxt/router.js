@@ -9,6 +9,7 @@ const _3fc75cec = () => interopDefault(import('../pages/category.vue' /* webpack
 const _3d952988 = () => interopDefault(import('../pages/change-password.vue' /* webpackChunkName: "pages/change-password" */))
 const _3446731e = () => interopDefault(import('../pages/client-roster.vue' /* webpackChunkName: "pages/client-roster" */))
 const _fdab15a8 = () => interopDefault(import('../pages/clients.vue' /* webpackChunkName: "pages/clients" */))
+const _1924cc2c = () => interopDefault(import('../pages/dashain-sheet.vue' /* webpackChunkName: "pages/dashain-sheet" */))
 const _662b84ae = () => interopDefault(import('../pages/employee-roster.vue' /* webpackChunkName: "pages/employee-roster" */))
 const _cc0035ae = () => interopDefault(import('../pages/employees.vue' /* webpackChunkName: "pages/employees" */))
 const _71ba6f7c = () => interopDefault(import('../pages/holiday.vue' /* webpackChunkName: "pages/holiday" */))
@@ -57,6 +58,11 @@ export const routerOptions = {
     component: _fdab15a8,
     meta: {"name":"ClientManagement","validations":{"editedItem":{"siteName":{},"address":{},"phone":{}},"employeeMappings":{"newMapping":{"category":{},"quantity":{}}}}},
     name: "clients"
+  }, {
+    path: "/dashain-sheet",
+    component: _1924cc2c,
+    meta: {"name":"DashainWorkingCalculation"},
+    name: "dashain-sheet"
   }, {
     path: "/employee-roster",
     component: _662b84ae,
