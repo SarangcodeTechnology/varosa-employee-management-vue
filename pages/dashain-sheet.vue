@@ -5,10 +5,10 @@
         <v-container fluid>
           <v-container fluid>
             <v-row justify="center">
-              <v-col cols="auto">
+              <!-- <v-col cols="auto">
                 <h3 v-if="useNepaliCalendar">Nepali Calendar</h3>
                 <h3 v-else>English Calendar</h3>
-              </v-col>
+              </v-col> -->
               <v-col cols="6">
                       <v-autocomplete
                         prepend-inner-icon="fa-solid fa-users"
@@ -21,6 +21,12 @@
                         return-object
                       ></v-autocomplete>
                     </v-col>
+                    <!-- <v-btn @click="getDashainCalculation()" >
+                </v-btn> -->
+                <v-btn color="primary" @click="getDashainCalculation()">
+              <v-icon left>fas fa-plus</v-icon>
+              Load
+            </v-btn>
             </v-row>
             <v-row>
             <v-data-table
@@ -242,6 +248,9 @@
         temp.isLoading = true;
         this.makeGetRequest({
           route: "salaryDetails/dashainWorkingSheet",
+          params: {
+            category: this.category.name,
+        },
           // data: {
           //   isNepaliDate: temp.useNepaliCalendar,
           //   month: temp.useNepaliCalendar
@@ -315,7 +324,7 @@
       },
     },
     mounted() {
-      this.getDashainCalculation();
+      // this.getDashainCalculation();
       this.getAllActiveCategory();
     },
     computed: {
