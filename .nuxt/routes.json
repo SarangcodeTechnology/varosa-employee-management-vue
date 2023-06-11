@@ -6,8 +6,7 @@
     "chunkName": "pages/bank",
     "meta": {
       "name": "BankManagement"
-    },
-    "_name": "_189b65c8"
+    }
   },
   {
     "name": "category",
@@ -16,8 +15,7 @@
     "chunkName": "pages/category",
     "meta": {
       "name": "CategoryManagement"
-    },
-    "_name": "_3fc75cec"
+    }
   },
   {
     "name": "change-password",
@@ -26,8 +24,7 @@
     "chunkName": "pages/change-password",
     "meta": {
       "name": "ChangePassword"
-    },
-    "_name": "_3d952988"
+    }
   },
   {
     "name": "client-roster",
@@ -36,8 +33,7 @@
     "chunkName": "pages/client-roster",
     "meta": {
       "name": "ClientRoster"
-    },
-    "_name": "_3446731e"
+    }
   },
   {
     "name": "clients",
@@ -59,8 +55,7 @@
           }
         }
       }
-    },
-    "_name": "_fdab15a8"
+    }
   },
   {
     "name": "dashain-sheet",
@@ -69,8 +64,7 @@
     "chunkName": "pages/dashain-sheet",
     "meta": {
       "name": "DashainWorkingCalculation"
-    },
-    "_name": "_1924cc2c"
+    }
   },
   {
     "name": "employee-roster",
@@ -79,8 +73,7 @@
     "chunkName": "pages/employee-roster",
     "meta": {
       "name": "EmployeeRoster"
-    },
-    "_name": "_662b84ae"
+    }
   },
   {
     "name": "employees",
@@ -105,8 +98,7 @@
           }
         }
       }
-    },
-    "_name": "_cc0035ae"
+    }
   },
   {
     "name": "holiday",
@@ -115,8 +107,7 @@
     "chunkName": "pages/holiday",
     "meta": {
       "name": "HolidayManagement"
-    },
-    "_name": "_71ba6f7c"
+    }
   },
   {
     "name": "leave",
@@ -125,8 +116,7 @@
     "chunkName": "pages/leave",
     "meta": {
       "name": "LeaveHistory"
-    },
-    "_name": "_6a05fd4a"
+    }
   },
   {
     "name": "leave-payout",
@@ -135,8 +125,7 @@
     "chunkName": "pages/leave-payout",
     "meta": {
       "name": "Leave Payout"
-    },
-    "_name": "_14305908"
+    }
   },
   {
     "name": "login",
@@ -150,8 +139,7 @@
         "email": {},
         "password": {}
       }
-    },
-    "_name": "_017df90d"
+    }
   },
   {
     "name": "salary",
@@ -160,8 +148,7 @@
     "chunkName": "pages/salary",
     "meta": {
       "name": "SalaryDetails"
-    },
-    "_name": "_2b8cc556"
+    }
   },
   {
     "name": "settings",
@@ -170,8 +157,7 @@
     "chunkName": "pages/settings",
     "meta": {
       "name": "settings"
-    },
-    "_name": "_32e393a2"
+    }
   },
   {
     "name": "sheet",
@@ -180,8 +166,7 @@
     "chunkName": "pages/sheet",
     "meta": {
       "name": "MonthlySalarySheet"
-    },
-    "_name": "_702d07fa"
+    }
   },
   {
     "name": "user",
@@ -197,8 +182,7 @@
           }
         }
       }
-    },
-    "_name": "_7788ebd7"
+    }
   },
   {
     "name": "index",
@@ -207,7 +191,6 @@
     "chunkName": "pages/index",
     "meta": {
       "name": "Dashboard"
-    },
-    "_name": "_37d655f6"
+    }
   }
 ]

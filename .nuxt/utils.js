@@ -200,7 +200,7 @@ export async function setContext (app, context) {
       payload: context.payload,
       error: context.error,
       base: app.router.options.base,
-      env: {"BACKEND_BASE_URL":"http://localhost:9091/","BACKEND_API_URL":"http://localhost:9091/"}
+      env: {}
     }
     // Only set once
 
