@@ -13,10 +13,10 @@ import { createStore } from './store.js'
 
 /* Plugins */
 
-import nuxt_plugin_plugin_ca087e5c from 'nuxt_plugin_plugin_ca087e5c' // Source: ./components/plugin.js (mode: 'all')
-import nuxt_plugin_plugin_2da5845c from 'nuxt_plugin_plugin_2da5845c' // Source: ./vuetify/plugin.js (mode: 'all')
-import nuxt_plugin_axios_90a9d230 from 'nuxt_plugin_axios_90a9d230' // Source: ./axios.js (mode: 'all')
-import nuxt_plugin_cookieuniversalnuxt_29a9e690 from 'nuxt_plugin_cookieuniversalnuxt_29a9e690' // Source: ./cookie-universal-nuxt.js (mode: 'all')
+import nuxt_plugin_plugin_49de4a94 from 'nuxt_plugin_plugin_49de4a94' // Source: ./components/plugin.js (mode: 'all')
+import nuxt_plugin_plugin_87f55610 from 'nuxt_plugin_plugin_87f55610' // Source: ./vuetify/plugin.js (mode: 'all')
+import nuxt_plugin_axios_fb663268 from 'nuxt_plugin_axios_fb663268' // Source: ./axios.js (mode: 'all')
+import nuxt_plugin_cookieuniversalnuxt_77d12318 from 'nuxt_plugin_cookieuniversalnuxt_77d12318' // Source: ./cookie-universal-nuxt.js (mode: 'all')
 import nuxt_plugin_vuexpersister_2c89ea5b from 'nuxt_plugin_vuexpersister_2c89ea5b' // Source: ../plugins/vuex-persister.js (mode: 'client')
 import nuxt_plugin_vnepalidatepicker_6d030b36 from 'nuxt_plugin_vnepalidatepicker_6d030b36' // Source: ../plugins/v-nepali-date-picker.js (mode: 'all')
 
@@ -215,20 +215,20 @@ async function createApp(ssrContext, config = {}) {
   }
   // Plugin execution
 
-  if (typeof nuxt_plugin_plugin_ca087e5c === 'function') {
-    await nuxt_plugin_plugin_ca087e5c(app.context, inject)
+  if (typeof nuxt_plugin_plugin_49de4a94 === 'function') {
+    await nuxt_plugin_plugin_49de4a94(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_plugin_2da5845c === 'function') {
-    await nuxt_plugin_plugin_2da5845c(app.context, inject)
+  if (typeof nuxt_plugin_plugin_87f55610 === 'function') {
+    await nuxt_plugin_plugin_87f55610(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_axios_90a9d230 === 'function') {
-    await nuxt_plugin_axios_90a9d230(app.context, inject)
+  if (typeof nuxt_plugin_axios_fb663268 === 'function') {
+    await nuxt_plugin_axios_fb663268(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_cookieuniversalnuxt_29a9e690 === 'function') {
-    await nuxt_plugin_cookieuniversalnuxt_29a9e690(app.context, inject)
+  if (typeof nuxt_plugin_cookieuniversalnuxt_77d12318 === 'function') {
+    await nuxt_plugin_cookieuniversalnuxt_77d12318(app.context, inject)
   }
 
   if (process.client && typeof nuxt_plugin_vuexpersister_2c89ea5b === 'function') {

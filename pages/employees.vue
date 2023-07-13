@@ -1954,16 +1954,37 @@ export default {
       },
       freezingColumns: 3,
       headers: [
-        { text: "S.N.", value: "sno", width: "2%" },
-        { text: "V.S. No.", value: "vsNo" },
+        { text: "S.N.", value: "sno", width: "2%" ,
+        filter: value => {
+            if (this.search) return true
+            return value 
+          }},
+        { text: "V.S. No.", value: "vsNo",
+        },
         { text: "Staff Name", value: "staffName" },
-        { text: "Phone", value: "phone" },
+        { text: "Phone", value: "phone",
+        filter: value => {
+            if (this.search) return true
+            return value 
+          }},
         { text: "Branch", value: "email" },
-        { text: "Date of Birth", value: "dateOfBirth" },
-        { text: "Gender", value: "gender" },
+        { text: "Date of Birth", value: "dateOfBirth" ,
+        filter: value => {
+            if (this.search) return true
+            return value 
+          }},
+        { text: "Gender", value: "gender" ,
+        filter: value => {
+            if (this.search) return true
+            return value 
+          }},
         { text: "Part Time Join Date", value: "partTimeJoinDate" },
         { text: "Full Time Join Date", value: "fullTimeJoinDate" },
-        { text: "Designation", value: "categoryName" },
+        { text: "Designation", value: "categoryName" ,
+        filter: value => {
+            if (this.search) return true
+            return value 
+          }},
         { text: "Clients", value: "clients" },
         { text: "Assigned Hours", value: "assignedHours" },
         { text: "Basic Hours", value: "basicHours" },

@@ -4,23 +4,23 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _189b65c8 = () => interopDefault(import('../pages/bank.vue' /* webpackChunkName: "pages/bank" */))
-const _3fc75cec = () => interopDefault(import('../pages/category.vue' /* webpackChunkName: "pages/category" */))
-const _3d952988 = () => interopDefault(import('../pages/change-password.vue' /* webpackChunkName: "pages/change-password" */))
-const _3446731e = () => interopDefault(import('../pages/client-roster.vue' /* webpackChunkName: "pages/client-roster" */))
-const _fdab15a8 = () => interopDefault(import('../pages/clients.vue' /* webpackChunkName: "pages/clients" */))
-const _1924cc2c = () => interopDefault(import('../pages/dashain-sheet.vue' /* webpackChunkName: "pages/dashain-sheet" */))
-const _662b84ae = () => interopDefault(import('../pages/employee-roster.vue' /* webpackChunkName: "pages/employee-roster" */))
-const _cc0035ae = () => interopDefault(import('../pages/employees.vue' /* webpackChunkName: "pages/employees" */))
-const _71ba6f7c = () => interopDefault(import('../pages/holiday.vue' /* webpackChunkName: "pages/holiday" */))
-const _6a05fd4a = () => interopDefault(import('../pages/leave.vue' /* webpackChunkName: "pages/leave" */))
-const _14305908 = () => interopDefault(import('../pages/leave-payout.vue' /* webpackChunkName: "pages/leave-payout" */))
-const _017df90d = () => interopDefault(import('../pages/login.vue' /* webpackChunkName: "pages/login" */))
-const _2b8cc556 = () => interopDefault(import('../pages/salary.vue' /* webpackChunkName: "pages/salary" */))
-const _32e393a2 = () => interopDefault(import('../pages/settings.vue' /* webpackChunkName: "pages/settings" */))
-const _702d07fa = () => interopDefault(import('../pages/sheet.vue' /* webpackChunkName: "pages/sheet" */))
-const _7788ebd7 = () => interopDefault(import('../pages/user.vue' /* webpackChunkName: "pages/user" */))
-const _37d655f6 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
+const _398594a8 = () => interopDefault(import('../pages/bank.vue' /* webpackChunkName: "pages/bank" */))
+const _3868e124 = () => interopDefault(import('../pages/category.vue' /* webpackChunkName: "pages/category" */))
+const _56e384d8 = () => interopDefault(import('../pages/change-password.vue' /* webpackChunkName: "pages/change-password" */))
+const _743c970d = () => interopDefault(import('../pages/client-roster.vue' /* webpackChunkName: "pages/client-roster" */))
+const _0569eac8 = () => interopDefault(import('../pages/clients.vue' /* webpackChunkName: "pages/clients" */))
+const _fc652af4 = () => interopDefault(import('../pages/dashain-sheet.vue' /* webpackChunkName: "pages/dashain-sheet" */))
+const _484cc36c = () => interopDefault(import('../pages/employee-roster.vue' /* webpackChunkName: "pages/employee-roster" */))
+const _0c3863c5 = () => interopDefault(import('../pages/employees.vue' /* webpackChunkName: "pages/employees" */))
+const _140c35d0 = () => interopDefault(import('../pages/holiday.vue' /* webpackChunkName: "pages/holiday" */))
+const _54952df7 = () => interopDefault(import('../pages/leave.vue' /* webpackChunkName: "pages/leave" */))
+const _108604ec = () => interopDefault(import('../pages/leave-payout.vue' /* webpackChunkName: "pages/leave-payout" */))
+const _e9d3b4ae = () => interopDefault(import('../pages/login.vue' /* webpackChunkName: "pages/login" */))
+const _560ba78c = () => interopDefault(import('../pages/salary.vue' /* webpackChunkName: "pages/salary" */))
+const _2b8517da = () => interopDefault(import('../pages/settings.vue' /* webpackChunkName: "pages/settings" */))
+const _5181a89f = () => interopDefault(import('../pages/sheet.vue' /* webpackChunkName: "pages/sheet" */))
+const _422abbbb = () => interopDefault(import('../pages/user.vue' /* webpackChunkName: "pages/user" */))
+const _7d22fadc = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
 
@@ -35,87 +35,87 @@ export const routerOptions = {
 
   routes: [{
     path: "/bank",
-    component: _189b65c8,
+    component: _398594a8,
     meta: {"name":"BankManagement"},
     name: "bank"
   }, {
     path: "/category",
-    component: _3fc75cec,
+    component: _3868e124,
     meta: {"name":"CategoryManagement"},
     name: "category"
   }, {
     path: "/change-password",
-    component: _3d952988,
+    component: _56e384d8,
     meta: {"name":"ChangePassword"},
     name: "change-password"
   }, {
     path: "/client-roster",
-    component: _3446731e,
+    component: _743c970d,
     meta: {"name":"ClientRoster"},
     name: "client-roster"
   }, {
     path: "/clients",
-    component: _fdab15a8,
+    component: _0569eac8,
     meta: {"name":"ClientManagement","validations":{"editedItem":{"siteName":{},"address":{},"phone":{}},"employeeMappings":{"newMapping":{"category":{},"quantity":{}}}}},
     name: "clients"
   }, {
     path: "/dashain-sheet",
-    component: _1924cc2c,
+    component: _fc652af4,
     meta: {"name":"DashainWorkingCalculation"},
     name: "dashain-sheet"
   }, {
     path: "/employee-roster",
-    component: _662b84ae,
+    component: _484cc36c,
     meta: {"name":"EmployeeRoster"},
     name: "employee-roster"
   }, {
     path: "/employees",
-    component: _cc0035ae,
+    component: _0c3863c5,
     meta: {"name":"EmployeeManagement","validations":{"editedItem":{"vsNo":{},"staffName":{},"phone":{},"category":{},"dateOfBirth":{},"assignedHours":{},"basicHours":{}},"clientMappings":{"newMapping":{"client":{}}}}},
     name: "employees"
   }, {
     path: "/holiday",
-    component: _71ba6f7c,
+    component: _140c35d0,
     meta: {"name":"HolidayManagement"},
     name: "holiday"
   }, {
     path: "/leave",
-    component: _6a05fd4a,
+    component: _54952df7,
     meta: {"name":"LeaveHistory"},
     name: "leave"
   }, {
     path: "/leave-payout",
-    component: _14305908,
+    component: _108604ec,
     meta: {"name":"Leave Payout"},
     name: "leave-payout"
   }, {
     path: "/login",
-    component: _017df90d,
+    component: _e9d3b4ae,
     meta: {"name":"Login","layout":"login","validations":{"email":{},"password":{}}},
     name: "login"
   }, {
     path: "/salary",
-    component: _2b8cc556,
+    component: _560ba78c,
     meta: {"name":"SalaryDetails"},
     name: "salary"
   }, {
     path: "/settings",
-    component: _32e393a2,
+    component: _2b8517da,
     meta: {"name":"settings"},
     name: "settings"
   }, {
     path: "/sheet",
-    component: _702d07fa,
+    component: _5181a89f,
     meta: {"name":"MonthlySalarySheet"},
     name: "sheet"
   }, {
     path: "/user",
-    component: _7788ebd7,
+    component: _422abbbb,
     meta: {"name":"UserManagement","validations":{"clientMappings":{"newMapping":{"client":{}}}}},
     name: "user"
   }, {
     path: "/",
-    component: _37d655f6,
+    component: _7d22fadc,
     meta: {"name":"Dashboard"},
     name: "index"
   }],

@@ -2,43 +2,47 @@
   {
     "name": "bank",
     "path": "/bank",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/bank.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/bank.vue",
     "chunkName": "pages/bank",
     "meta": {
       "name": "BankManagement"
-    }
+    },
+    "_name": "_398594a8"
   },
   {
     "name": "category",
     "path": "/category",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/category.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/category.vue",
     "chunkName": "pages/category",
     "meta": {
       "name": "CategoryManagement"
-    }
+    },
+    "_name": "_3868e124"
   },
   {
     "name": "change-password",
     "path": "/change-password",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/change-password.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/change-password.vue",
     "chunkName": "pages/change-password",
     "meta": {
       "name": "ChangePassword"
-    }
+    },
+    "_name": "_56e384d8"
   },
   {
     "name": "client-roster",
     "path": "/client-roster",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/client-roster.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/client-roster.vue",
     "chunkName": "pages/client-roster",
     "meta": {
       "name": "ClientRoster"
-    }
+    },
+    "_name": "_743c970d"
   },
   {
     "name": "clients",
     "path": "/clients",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/clients.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/clients.vue",
     "chunkName": "pages/clients",
     "meta": {
       "name": "ClientManagement",
@@ -55,30 +59,33 @@
           }
         }
       }
-    }
+    },
+    "_name": "_0569eac8"
   },
   {
     "name": "dashain-sheet",
     "path": "/dashain-sheet",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/dashain-sheet.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/dashain-sheet.vue",
     "chunkName": "pages/dashain-sheet",
     "meta": {
       "name": "DashainWorkingCalculation"
-    }
+    },
+    "_name": "_fc652af4"
   },
   {
     "name": "employee-roster",
     "path": "/employee-roster",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/employee-roster.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/employee-roster.vue",
     "chunkName": "pages/employee-roster",
     "meta": {
       "name": "EmployeeRoster"
-    }
+    },
+    "_name": "_484cc36c"
   },
   {
     "name": "employees",
     "path": "/employees",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/employees.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/employees.vue",
     "chunkName": "pages/employees",
     "meta": {
       "name": "EmployeeManagement",
@@ -98,39 +105,43 @@
           }
         }
       }
-    }
+    },
+    "_name": "_0c3863c5"
   },
   {
     "name": "holiday",
     "path": "/holiday",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/holiday.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/holiday.vue",
     "chunkName": "pages/holiday",
     "meta": {
       "name": "HolidayManagement"
-    }
+    },
+    "_name": "_140c35d0"
   },
   {
     "name": "leave",
     "path": "/leave",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/leave.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/leave.vue",
     "chunkName": "pages/leave",
     "meta": {
       "name": "LeaveHistory"
-    }
+    },
+    "_name": "_54952df7"
   },
   {
     "name": "leave-payout",
     "path": "/leave-payout",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/leave-payout.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/leave-payout.vue",
     "chunkName": "pages/leave-payout",
     "meta": {
       "name": "Leave Payout"
-    }
+    },
+    "_name": "_108604ec"
   },
   {
     "name": "login",
     "path": "/login",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/login.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/login.vue",
     "chunkName": "pages/login",
     "meta": {
       "name": "Login",
@@ -139,39 +150,43 @@
         "email": {},
         "password": {}
       }
-    }
+    },
+    "_name": "_e9d3b4ae"
   },
   {
     "name": "salary",
     "path": "/salary",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/salary.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/salary.vue",
     "chunkName": "pages/salary",
     "meta": {
       "name": "SalaryDetails"
-    }
+    },
+    "_name": "_560ba78c"
   },
   {
     "name": "settings",
     "path": "/settings",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/settings.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/settings.vue",
     "chunkName": "pages/settings",
     "meta": {
       "name": "settings"
-    }
+    },
+    "_name": "_2b8517da"
   },
   {
     "name": "sheet",
     "path": "/sheet",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/sheet.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/sheet.vue",
     "chunkName": "pages/sheet",
     "meta": {
       "name": "MonthlySalarySheet"
-    }
+    },
+    "_name": "_5181a89f"
   },
   {
     "name": "user",
     "path": "/user",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/user.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/user.vue",
     "chunkName": "pages/user",
     "meta": {
       "name": "UserManagement",
@@ -182,15 +197,17 @@
           }
         }
       }
-    }
+    },
+    "_name": "_422abbbb"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "/Users/samajdar/varosa-employee-management-vue/pages/index.vue",
+    "component": "/Users/samajdarali/varosa-employee-management-vue/pages/index.vue",
     "chunkName": "pages/index",
     "meta": {
       "name": "Dashboard"
-    }
+    },
+    "_name": "_7d22fadc"
   }
 ]
