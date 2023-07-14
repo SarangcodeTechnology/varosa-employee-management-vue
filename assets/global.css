@@ -51,6 +51,7 @@
   max-width: 250px;
   width: fit-content;
   position: absolute;
+  overflow: unset;
   top: 0;
   left: 0;
   z-index: 1;
@@ -60,6 +61,7 @@
 @media(max-width: 600px){
     .freezed-dt-container {
         display: none;
+        overflow: unset;
     }
 }
 
@@ -70,3 +72,4 @@
   top: 0;
   left: 0;
 }
+.v-data-table__wrapper{height:calc(100vh - 150px) !important;}

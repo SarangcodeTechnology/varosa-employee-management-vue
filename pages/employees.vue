@@ -54,7 +54,7 @@
 
         <!--Kam garni dt-->
         <div class="dt-container" style="left: -13px; width: calc(100% + 24px)">
-          <div class="freezed-dt-container">
+          <div class="">
             <v-data-table
               ref="dt1"
               :page="pageToShow"

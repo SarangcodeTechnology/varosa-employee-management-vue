@@ -154,12 +154,11 @@
 
           <!--Kam garni dt-->
           <div class="dt-container">
-            <div class="freezed-dt-container">
+            <div class="">
               <v-data-table
                 ref="dt1"
                 disable-sort
                 hide-default-footer
-                class="freezedDT"
                 :headers="headers1"
                 :items="rosterByEmployees"
                 :search="search"
@@ -167,7 +166,7 @@
                 calculate-widths
                 :items-per-page="rosterByEmployees.length"
                 :loading="isLoading"
-                fixed-header
+                :fixed-header=true
                 :footer-props="{
                 }"
               >
@@ -176,7 +175,6 @@
             </div>
             <div class="bg-dt-container">
               <v-data-table
-                class="freezedDT"
                 ref="dt2"
                 calculate-widths
                 disable-sort

@@ -1230,7 +1230,7 @@ export default {
       days.forEach((day) => {
         // NaN fix
         day.workedHours = day.workedHours ? day.workedHours : 0;
-
+      debugger
         if (day.workedHours) {
           if (day.isHoliday) {
             if (day.workedHours > employee.assignedHours) {
@@ -1257,9 +1257,11 @@ export default {
               totalWorkedHours = totalWorkedHours + day.workedHours;
               totalBasicHours = totalBasicHours + day.workedHours;
               numberOfWorkedDays++;
+              debugger
             }
             // totalHolidayHours += day.isHoliday ? day.workedHours : 0;
           }
+          debugger
         }
         // Add leave and sick leave hours
         if (!day.isReliever) {
@@ -1327,6 +1329,7 @@ export default {
         employee.basicHours,
         employee.assignedHours
       );
+      debugger
       return {
         totalWorkedHours,
         totalLeaveDays,
@@ -1339,6 +1342,7 @@ export default {
         totalLeaveHours,
         totalSickHours,
       };
+      debugger
     },
     getNumberOfWorkingDaysInCurrentMonth(
       numberOfDaysInCurrentMonth,
