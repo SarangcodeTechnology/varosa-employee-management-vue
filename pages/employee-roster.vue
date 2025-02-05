@@ -156,6 +156,14 @@
               </v-row>
               <v-row no-gutters class="mt-1">
                 <v-col cols="auto">
+                  <v-sheet color="blue" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Half Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
                   <v-sheet color="yellow" width="40px" rounded>
                     <v-icon></v-icon>
                   </v-sheet>
@@ -295,6 +303,24 @@
                           </v-list-item-title>
                         </v-list-item>
                         <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
+                          @click="setHalfLeave(item.days[j].workedHours, index, j)"
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isHalfLeave
+                                  : false
+                              )
+                                ? "Undo Half Leave"
+                                : "Half Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
                           v-if="!!item.days[j] ? item.days[j].isHoliday : false"
                           @click="
                             setHolidayBasicHours(
@@ -415,6 +441,26 @@
                           v-if="
                             !!item.days[j] ? !item.days[j].isHoliday : false
                           "
+                          @click="
+                            setHalfLeave(item.days[j].workedHours, index, j)
+                          "
+                        >
+                          <v-list-item-title
+                            >{{
+                              (
+                                !!employeeData[index].days[j]
+                                  ? employeeData[index].days[j].isHalfLeave
+                                  : false
+                              )
+                                ? "Undo Half Leave"
+                                : "Half Leave"
+                            }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="
+                            !!item.days[j] ? !item.days[j].isHoliday : false
+                          "
                           @click="setAbsent(item.days[j].workedHours, index, j)"
                         >
                           <v-list-item-title
@@ -514,51 +560,45 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Annual Leaves this year</td>
+                        <td>Total Number of Allocated Yearly Leaves</td>
                         <td>
                           {{
-                            annualLeaveDetails.numberOfValidLeavesThisYear -
-                            annualLeaveDetails.numberOfTakenLeavesThisYear
+                            leaveDetailsApi.numberOfAllocatedYearlyLeaves
+                              ? leaveDetailsApi.numberOfAllocatedYearlyLeaves
+                              : "0"
                           }}
                         </td>
                       </tr>
+
                       <tr>
-                        <td>Taken Leaves this year</td>
-                        <td>
-                          {{ annualLeaveDetails.numberOfTakenLeavesThisYear }}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Available Leaves from previous year</td>
+                        <td>Opening Balance of Yearly Leaves</td>
                         <td>
                           {{
-                            annualLeaveDetails.numberOfValidLeavesPreviousYear -
-                            annualLeaveDetails.numberOfTakenLeavesPreviousYear -
-                            annualLeaveDetails.numberOfPaidOutLeaves
+                            leaveDetailsApi.numberOfOpeningYearlyLeaves
+                              ? leaveDetailsApi.numberOfOpeningYearlyLeaves
+                              : "0"
                           }}
                         </td>
                       </tr>
+
                       <tr>
-                        <td>Taken Leaves from previous year</td>
+                        <td>Remaining Yearly Leaves</td>
                         <td>
                           {{
-                            annualLeaveDetails.numberOfTakenLeavesPreviousYear
+                            leaveDetailsApi.numberOfRemainingYearlyLeaves
+                              ? leaveDetailsApi.numberOfRemainingYearlyLeaves
+                              : "0"
                           }}
                         </td>
                       </tr>
+
                       <tr>
-                        <td>Paid out Leaves previous year</td>
-                        <td>{{ annualLeaveDetails.numberOfPaidOutLeaves }}</td>
-                      </tr>
-                      <tr>
-                        <td>Total Available Leaves</td>
+                        <td>Number of Yearly Leaves Taken</td>
                         <td>
                           {{
-                            annualLeaveDetails.numberOfValidLeavesThisYear +
-                            annualLeaveDetails.numberOfValidLeavesPreviousYear -
-                            annualLeaveDetails.numberOfTakenLeavesThisYear -
-                            annualLeaveDetails.numberOfTakenLeavesPreviousYear -
-                            annualLeaveDetails.numberOfPaidOutLeaves
+                            leaveDetailsApi.numberOfYearlyLeavesTaken
+                              ? leaveDetailsApi.numberOfYearlyLeavesTaken
+                              : "0"
                           }}
                         </td>
                       </tr>
@@ -577,18 +617,43 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Available Leaves</td>
+                        <td>Total Number of Allocated Sick Leaves</td>
                         <td>
                           {{
-                            sickLeaveDetails.numberOfValidLeavesThisYear -
-                            sickLeaveDetails.numberOfTakenLeavesThisYear
+                            leaveDetailsApi.numberOfAllocatedSickLeaves
+                              ? leaveDetailsApi.numberOfAllocatedSickLeaves
+                              : "0"
                           }}
                         </td>
                       </tr>
                       <tr>
-                        <td>Taken Leaves</td>
+                        <td>Opening Balance of Sick Leaves</td>
                         <td>
-                          {{ sickLeaveDetails.numberOfTakenLeavesThisYear }}
+                          {{
+                            leaveDetailsApi.numberOfOpeningSickLeaves
+                              ? leaveDetailsApi.numberOfOpeningSickLeaves
+                              : "0"
+                          }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Remaining Sick Leaves</td>
+                        <td>
+                          {{
+                            leaveDetailsApi.numberOfRemainingSickLeaves
+                              ? leaveDetailsApi.numberOfRemainingSickLeaves
+                              : "0"
+                          }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Number of Sick Leaves Taken</td>
+                        <td>
+                          {{
+                            leaveDetailsApi.numberOfSickLeavesTaken
+                              ? leaveDetailsApi.numberOfSickLeavesTaken
+                              : "0"
+                          }}
                         </td>
                       </tr>
                     </tbody>
@@ -616,6 +681,7 @@ export default {
   },
   data() {
     return {
+      leaveDetailsApi: {},
       isExcelExporting: false,
       freezingColumns: 2,
       holidayBasicHours: null,
@@ -995,6 +1061,42 @@ export default {
         })
         .catch((error) => {});
     },
+    getLeaveDetailsApi() {
+      const temp = this;
+      const employeeId = this.selectedEmployee.id;
+      console.log(temp);
+      this.makeGetRequest({
+        route: `leaveDetails/leaveDetailsByEmployeeId?nepaliYear=${this.selectedNepaliYear}&employeeId=${employeeId}`,
+      })
+        .then((response) => {
+          if (response.data.status === "OK") {
+            this.$store.dispatch("toast/setSnackbar", {
+              text: "Leave details successfully fetched",
+              color: "success",
+            });
+            if (response.data.data.length > 0) {
+              temp.leaveDetailsApi = response.data.data[0];
+            } else {
+              temp.leaveDetailsApi = {};
+            }
+          } else {
+            this.$store.dispatch("toast/setSnackbar", {
+              icon: "fa-solid fa-circle-xmark",
+              color: "error",
+              title: "Error",
+              text: "Unable to fetch leave details",
+            });
+          }
+        })
+        .catch((error) => {
+          this.$store.dispatch("toast/setSnackbar", {
+            icon: "fa-solid fa-circle-xmark",
+            color: "error",
+            title: "Error",
+            text: "Request failed",
+          });
+        });
+    },
     getAllActiveEmployee() {
       let temp = this;
       this.$store
@@ -1119,8 +1221,9 @@ export default {
               }
               temp.employeeData = tempRoster;
               temp.employeeDataCache = tempRoster; 
-              this.getEmployeeLeaveDetails(item);
+              this.getLeaveDetailsApi();
             }
+           
             temp.isLoading = false;
           })
           .catch((error) => {
@@ -1401,6 +1504,8 @@ export default {
       const day = this.employeeData[rosterByEmployeeIndex].days[dayIndex];
       const workedHours = parseFloat(event);
       // Set workedHours in current employeeData dataset
+
+
       this.employeeData[rosterByEmployeeIndex].days[dayIndex].workedHours =
         workedHours;
 
@@ -1491,7 +1596,7 @@ export default {
         employeeId: this.selectedEmployee.id,
         clientId: roster.client.id,
         workedHours:
-          workedHours && !day.isLeave && !day.isSick ? workedHours : 0,
+           day.isHalfLeave ? 4 : workedHours && !day.isLeave && !day.isSick ? workedHours : 0,
         englishFullDate,
         englishYear,
         englishMonth,
@@ -1504,6 +1609,7 @@ export default {
         isLeave: day.isLeave,
         isSick: day.isSick,
         isAbsent: day.isAbsent,
+        isHalfLeave : day.isHalfLeave,
         isHoliday: day.isHoliday,
         isOvertime: day.isOvertime,
         holidayBasicHours: day.holidayBasicHours,
@@ -1635,6 +1741,39 @@ export default {
             text: `${employeeAtHand.staffName} has already used up all sick leaves this fiscal year.`,
           });
         }
+      }
+    },
+    setHalfLeave(event, rosterByEmployeeIndex, dayIndex) {
+      if(this.selectedEmployee.assignedHours < 8){
+        this.$store.dispatch("toast/setSnackbar", {
+            icon: "fa-solid fa-circle-xmark",
+            color: "error",
+            title: "Error",
+            text: "Assigned Work Hour is less than 8. Cannot set Half Day Leave"
+          });
+          return;
+      }
+
+     
+      let undoLeave;
+      if (this.employeeData[rosterByEmployeeIndex].days[dayIndex].isHalfLeave) {
+        this.employeeData[rosterByEmployeeIndex].days[dayIndex].isHalfLeave = false;
+        undoLeave = true;
+        this.newHourLog(event, rosterByEmployeeIndex, dayIndex, undoLeave);
+      } else {
+          this.employeeData[rosterByEmployeeIndex].days[
+            dayIndex
+          ].leaveFiscalYear = this.selectedYear;
+          this.employeeData[rosterByEmployeeIndex].days[dayIndex].isHalfLeave = true;
+          this.employeeData[rosterByEmployeeIndex].days[dayIndex].workedHours = 4;
+        
+          this.employeeData[rosterByEmployeeIndex].days[
+            dayIndex
+          ].isAbsent = false;
+          undoLeave = true;
+          event = 0;
+          this.newHourLog(event, rosterByEmployeeIndex, dayIndex, undoLeave);
+       
       }
     },
     setAbsent(event, rosterByEmployeeIndex, dayIndex) {
@@ -1839,6 +1978,7 @@ export default {
                 title: "Success",
                 text: "Changes successfully applied",
               });
+              this.getLeaveDetailsApi();
               temp.newEmployeeRosters = [];
             } else {
               temp.$store.dispatch("toast/setSnackbar", {
@@ -2237,6 +2377,8 @@ export default {
           return "pink";
         } else if (day.isAbsent) {
           return "red";
+        } else if (day.isHalfLeave){
+          return "blue"
         }
       }
       return "white";

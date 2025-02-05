@@ -19,6 +19,17 @@
               </template>
             </v-autocomplete>
           </v-col>
+          <!-- <v-col cols="6">
+            <v-btn color="primary" dark @click="openViewReport()">
+                <v-icon left>fas fa-file-excel</v-icon>
+                View Leave Report
+              </v-btn>
+              <v-btn color="green" dark @click="openLeaveFileModal()">
+                <v-icon left>fas fa-file-excel</v-icon>
+                Upload Opening Leave Excel
+              </v-btn>
+          </v-col> -->
+
         </v-row>
         <v-container v-if="!!selectedEmployee" fluid>
           <v-row justify="center">
@@ -106,6 +117,82 @@
         </v-container>
       </v-container>
     </v-card>
+    <v-dialog scrollable max-width="50%" v-model="leaveFileModal">
+  <v-card>
+    <v-toolbar dark flat class="mb-6" color="primary">
+      <v-toolbar-title>Upload Opening Leave Excel</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn icon @click="leaveFileModal = false">
+          <v-icon>fa-solid fa-xmark</v-icon>
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-card-text>
+      <v-container fluid>
+        <v-row dense>
+          <v-col cols="12">
+            <v-file-input
+              v-model="file"
+              label="Upload Excel File"
+              accept=".xlsx, .xls"
+              outlined
+              dense
+            ></v-file-input>
+          </v-col>
+        </v-row>
+        <p class="mt-2">
+              <span>Here is a sample Excel file for your reference: </span>
+              <br>
+              <a href="/leaveExcelUpload.xlsx" download>Download Sample File</a>
+            </p>
+      </v-container>
+    </v-card-text>
+   
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="primary" @click="uploadFile()">Upload</v-btn>
+    
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+<v-dialog scrollable max-width="50%" v-model="leaveReportModal">
+  <v-card>
+    <v-toolbar dark flat class="mb-6" color="primary">
+      <v-toolbar-title>Leave Report</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn icon @click="leaveReportModal = false">
+          <v-icon>fa-solid fa-xmark</v-icon>
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-row>
+            <v-col cols="12">
+              <v-data-table
+                :search="search"
+                :items-per-page="25"
+                :loading="isLoading"
+                fixed-header
+                loading-text="Fetching data. Please wait..."
+                :footer-props="{
+                                showFirstLastPage: true,
+                                firstIcon : 'fas fa-angle-double-left',
+                                lastIcon:'fas fa-angle-double-right',
+                                nextIcon:'fas fa-angle-right',
+                                prevIcon:'fas fa-angle-left',
+                                itemsPerPageOptions:[25,50,100,-1]
+                              }"
+                :items="leaveReportWithSN"
+                :headers="reportHeader">
+               
+             
+              </v-data-table>
+            </v-col>
+          </v-row>
+  
+  </v-card>
+</v-dialog>
   </v-container>
 
 </template>
@@ -118,6 +205,10 @@ export default {
   name: "LeaveHistory",
   data() {
     return {
+      leaveFileModal: false,
+      leaveReportModal: false,
+      file: null,
+      leaveReportData: [],
       selectedNepaliYear: new NepaliDate().getYear(),
       selectedEnglishYear: new Date().getFullYear(),
       search: '',
@@ -129,12 +220,25 @@ export default {
         {text: "Nepali Full date", value: "nepaliFullDate"},
         {text: "English Full Date", value: "englishFullDate"},
       ],
+       reportHeader : [
+  { text: "S.N.", value: "sno", width: "5%" },
+  { text: "Employee Name", value: "employeeName", width: "20%" },
+  { text: "Allocated Sick Leaves", value: "numberOfAllocatedSickLeaves", width: "15%" },
+  { text: "Allocated Yearly Leaves", value: "numberOfAllocatedYearlyLeaves", width: "15%" },
+  { text: "Opening Sick Leaves", value: "numberOfOpeningSickLeaves", width: "15%" },
+  { text: "Opening Yearly Leaves", value: "numberOfOpeningYearlyLeaves", width: "15%" },
+  { text: "Remaining Sick Leaves", value: "numberOfRemainingSickLeaves", width: "15%" },
+  { text: "Remaining Yearly Leaves", value: "numberOfRemainingYearlyLeaves", width: "15%" },
+  { text: "Sick Leaves Taken", value: "numberOfSickLeavesTaken", width: "15%" },
+  { text: "Yearly Leaves Taken", value: "numberOfYearlyLeavesTaken", width: "15%" },
+],
       allActiveEmployee: [],
       selectedEmployee: null,
+      images: []
     }
   },
   methods: {
-    ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
+    ...mapActions("api", ["makeGetRequest", "makePostRequest","makePostRequestFile"]),
     getNumberOfMonthsSinceJoined(selectedNepaliMonth, employeeJoinMonth, selectedNepaliYear, employeeJoinYear) {
       const numberOfMonths = selectedNepaliMonth - employeeJoinMonth + (selectedNepaliYear - employeeJoinYear) * 12;
       return numberOfMonths < 1 ? 0 : numberOfMonths;
@@ -202,6 +306,75 @@ export default {
     },
     selectEmployee() {
       this.getAllLeavesPerNepaliFiscalYear();
+    },
+    openLeaveFileModal(){
+      this.leaveFileModal = true;
+    },
+    openViewReport(){
+      this.$store.dispatch("api/makeGetRequest",
+        {
+          route: `leaveDetails/leaveDetailsAllEmployee?nepaliYear=${this.selectedNepaliYear}`
+        }
+      ).then(response => {
+      
+       
+
+          this.leaveReportData=response.data.data;
+        
+        this.isloading = false;
+      }).catch((error) => {
+      });
+
+
+      this.leaveReportModal = true;
+    },
+    uploadFile() {
+      const temp =this;
+      let excelUpload = {
+        customerName: 'ssss'
+      }
+      if (!this.file) {
+        temp.$store.dispatch("toast/setSnackbar", {
+          icon: "fa-solid fa-circle-xmark",
+          color: "error",
+          title: "Error",
+          text: "Please choose excel file."
+        });
+        return;
+      }
+      // Handle the file upload logic here
+      console.log("Selected file:", this.file);
+      this.images.push(this.file)
+      const formData = new FormData()
+      console.log("imges file:", this.images);
+      formData.append('excelUpload', JSON.stringify(excelUpload))
+      for (let i = 0; i < this.images.length; i++) {
+        formData.append('files', this.images[i])
+      }
+      this.makePostRequestFile({
+        route: "fileUpload/openingLeaveUpload",
+        data: {
+          item: formData,
+        }
+      }).then((response) => {
+        if (response.data.status === "OK") {
+          temp.leaves = response.data.data;
+        } else {
+          temp.$store.dispatch("toast/setSnackbar", {
+            icon: "fa-solid fa-circle-xmark",
+            color: "error",
+            title: "Error",
+            text: "Unable to load leave list."
+          });
+        }
+      }).catch((error) => {
+        temp.$store.dispatch("toast/setSnackbar", {
+          icon: "fa-solid fa-circle-xmark",
+          color: "error",
+          title: "Error",
+          text: "Unable to load leave list."
+        });
+      });
     },
     previousYear() {
       this.selectedNepaliYear--;
@@ -295,7 +468,11 @@ export default {
   computed: {
     leavesWithSn() {
       return this.leaves.map((d, index) => ({...d, sno: index + 1}))
+    },
+    leaveReportWithSN(){
+      return this.leaveReportData.map((d, index) => ({...d, sno: index + 1}))
     }
+
   }
 }
 </script>

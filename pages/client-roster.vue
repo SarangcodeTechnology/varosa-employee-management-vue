@@ -118,6 +118,14 @@
               </v-row>
               <v-row no-gutters class="mt-1">
                 <v-col cols="auto">
+                  <v-sheet color="blue" width="40px" rounded>
+                    <v-icon></v-icon>
+                  </v-sheet>
+                </v-col>
+                <v-col cols="auto" class="ml-2">Half Leave</v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
+                <v-col cols="auto">
                   <v-sheet color="red" width="40px" rounded>
                     <v-icon></v-icon>
                   </v-sheet>
@@ -243,6 +251,24 @@
                             )
                               ? "Undo Sick Leave"
                               : "Sick Leave"
+                          }}
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-if="!!item.days[j] ? !item.days[j].isHoliday : false"
+                        @click="
+                          setHalfLeave(item.days[j].workedHours, index, j)
+                        "
+                      >
+                        <v-list-item-title
+                          >{{
+                            (
+                              !!rosterByEmployees[index].days[j]
+                                ? rosterByEmployees[index].days[j].isHalfLeave
+                                : false
+                            )
+                              ? "Undo Half Leave"
+                              : "Half Leave"
                           }}
                         </v-list-item-title>
                       </v-list-item>
@@ -734,6 +760,7 @@ export default {
       }
     },
     ...mapActions("api", ["makeGetRequest", "makePostRequest"]),
+    ...mapActions("leave", ["getEmployeeLeaveDetails"]),
     getallActiveClient() {
       let temp = this;
       this.$store
@@ -1243,7 +1270,7 @@ export default {
         employeeId: roster.employee.id,
         clientId: this.selectedClient.id,
         workedHours:
-          workedHours && !day.isLeave && !day.isSick ? workedHours : 0,
+         day.isHalfLeave ? 4: workedHours && !day.isLeave && !day.isSick ? workedHours : 0,
         englishFullDate,
         englishYear,
         englishMonth,
@@ -1336,6 +1363,49 @@ export default {
         }
       }
     },
+    setHalfLeave(event, rosterByEmployeeIndex, dayIndex) {
+      const employeeAtHand =
+      this.rosterByEmployees[rosterByEmployeeIndex].employee;
+      if(employeeAtHand.assignedHours < 8){
+        this.$store.dispatch("toast/setSnackbar", {
+            icon: "fa-solid fa-circle-xmark",
+            color: "error",
+            title: "Error",
+            text: "Assigned Work Hour is less than 8. Cannot set Half Day Leave"
+          });
+          return;
+      }
+      let undoLeave;
+      if (
+        this.rosterByEmployees[rosterByEmployeeIndex].days[dayIndex].isHalfLeave
+      ) {
+        this.rosterByEmployees[rosterByEmployeeIndex].days[
+          dayIndex
+        ].isHalfLeave = false;
+        undoLeave = true;
+        this.newHourLog(event, rosterByEmployeeIndex, dayIndex, undoLeave);
+      } else {
+        this.getEmployeeLeaveDetails(employeeAtHand);
+       
+        
+       
+        
+          this.rosterByEmployees[rosterByEmployeeIndex].days[
+            dayIndex
+          ].isHalfLeave = true;
+          this.rosterByEmployees[rosterByEmployeeIndex].days[
+            dayIndex
+          ].isSick = false;
+          this.rosterByEmployees[rosterByEmployeeIndex].days[
+            dayIndex
+          ].isAbsent = false;
+          undoLeave = true;
+          event = 0;
+          this.newHourLog(event, rosterByEmployeeIndex, dayIndex, undoLeave);
+      
+      }
+    },
+   
     setSickLeave(event, rosterByEmployeeIndex, dayIndex) {
       const employeeAtHand =
         this.rosterByEmployees[rosterByEmployeeIndex].employee;
@@ -2009,6 +2079,8 @@ export default {
           return "pink";
         } else if (day.isAbsent) {
           return "red";
+        } else if(day.isHalfLeave){
+          return "blue"
         }
       }
       return "white";

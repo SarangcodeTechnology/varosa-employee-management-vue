@@ -394,6 +394,11 @@ const defaultLayout =  {
               title: "Leave Payout Sheet",
               to: "leave-payout",
             },
+            {
+              icon: "fa-solid fa-laptop",
+              title: "Leave Report",
+              to: "leave-report",
+            },
           ],
         },
       ],
